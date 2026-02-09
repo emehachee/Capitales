@@ -3,15 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Juego de Capitales (Seed)</title>
+  <title>Capitales del Mundo</title>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 18px; line-height: 1.35; }
-    .card { max-width: 900px; margin: 0 auto; padding: 16px; border: 1px solid #ddd; border-radius: 14px; }
+    .card { max-width: 980px; margin: 0 auto; padding: 16px; border: 1px solid #ddd; border-radius: 14px; }
     h1 { margin: 0 0 10px 0; font-size: 20px; }
+    h2 { margin: 0 0 10px 0; font-size: 16px; }
     .row { display: flex; gap: 10px; flex-wrap: wrap; }
     .row > * { flex: 1; min-width: 180px; }
     label { display:block; font-size: 13px; margin-bottom: 6px; color: #333; }
-    input, button, textarea { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; }
+    input, button, textarea, select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; }
     button { cursor: pointer; border: 1px solid #bbb; background: #f6f6f6; }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
     .muted { color:#666; font-size: 13px; margin-top: 8px; }
@@ -22,43 +23,114 @@
     .bad { color: #b00020; }
     .pill { display:inline-block; padding: 3px 8px; border: 1px solid #ddd; border-radius: 999px; font-size: 12px; color:#444; margin-left: 8px; }
     textarea { margin-top: 10px; height: 90px; }
-    .footer { margin-top: 14px; font-size: 12px; color:#666; }
     .mini { font-size: 12px; color:#666; margin-top: 6px; }
+    .footer { margin-top: 14px; font-size: 12px; color:#666; }
 
-    /* Repaso */
+    /* menú */
+    .menuGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 760px) { .menuGrid { grid-template-columns: 1fr; } }
+    .menuCard { border: 1px solid #e6e6e6; border-radius: 14px; padding: 14px; }
+    .menuCard p { margin: 8px 0 0 0; color:#555; font-size: 13px; }
+    .tiny { font-size: 12px; color:#666; margin-top: 6px; }
+
+    /* checks */
+    .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    @media (max-width: 760px) { .checks { grid-template-columns: 1fr; } }
+    .chk { display:flex; align-items:center; gap:10px; border:1px solid #eee; border-radius: 12px; padding: 10px; }
+    .chk input { width: 18px; height: 18px; }
+    code { background: #f5f5f5; padding: 1px 6px; border-radius: 8px; }
+
+    /* repaso final */
     .review { margin-top: 12px; }
-    .review h2 { font-size: 16px; margin: 0 0 8px 0; }
     .review ul { margin: 0; padding-left: 18px; }
     .review li { margin: 6px 0; }
-    code { background: #f5f5f5; padding: 1px 6px; border-radius: 8px; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>Juego de Capitales del Mundo 🌍 <span class="pill">con seed</span></h1>
+    <h1>Capitales del Mundo 🌍</h1>
+    <div class="muted">
+      ✅ Mayúsculas/minúsculas NO importan · 🟡 tildes mal = 0,5 · ❌ mal escrita = 0
+    </div>
 
-    <div class="row">
-      <div>
-        <label>Tu nombre</label>
-        <input id="name" placeholder="Ej: Pablo" />
-      </div>
-      <div>
-        <label>Seed (para mismo set)</label>
-        <input id="seed" placeholder="Ej: 74219" inputmode="numeric" />
+    <!-- MENÚ -->
+    <div id="menu" class="qbox">
+      <h2>Elige modo</h2>
+      <div class="menuGrid">
+        <div class="menuCard">
+          <b>Modo Competición (con seed)</b>
+          <p>Mismo set para los dos jugadores (justo). Incluye cuotas por continentes y al menos 1 de Oriente Medio.</p>
+          <div class="row" style="margin-top:10px;">
+            <button id="goComp">Entrar a Competición</button>
+          </div>
+        </div>
+        <div class="menuCard">
+          <b>Modo Práctica/Repaso (sin seed)</b>
+          <p>Practica por zonas (África, Europa, Asia, América, Oceanía y/o Oriente Medio). Preguntas aleatorias solo de lo que elijas.</p>
+          <div class="row" style="margin-top:10px;">
+            <button id="goPractice">Entrar a Práctica</button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="row" style="margin-top:10px;">
-      <button id="btnStart">Empezar</button>
-      <button id="btnNewSeed">Generar seed aleatoria</button>
+    <!-- SETUP COMPETICIÓN -->
+    <div id="setupComp" class="qbox" style="display:none;">
+      <h2>Competición</h2>
+      <div class="row">
+        <div>
+          <label>Tu nombre</label>
+          <input id="compName" placeholder="Ej: Pablo" />
+        </div>
+        <div>
+          <label>Seed (mismo set)</label>
+          <input id="compSeed" placeholder="Ej: 74219" inputmode="numeric" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px;">
+        <button id="btnCompStart">Empezar Competición</button>
+        <button id="btnCompSeed">Generar seed</button>
+        <button id="btnBack1">Volver al menú</button>
+      </div>
+      <div class="tiny">Tip: compartid la seed por WhatsApp. Ej: <code>seed 74219</code></div>
     </div>
 
-    <p class="muted">
-      ✅ Mayúsculas/minúsculas NO importan. <br/>
-      🟡 Si está bien pero te falta/pones mal una tilde → 0,5 puntos. <br/>
-      ❌ Si está mal escrita (letras), 0 puntos.
-    </p>
+    <!-- SETUP PRÁCTICA -->
+    <div id="setupPractice" class="qbox" style="display:none;">
+      <h2>Práctica / Repaso (sin seed)</h2>
+      <div class="row">
+        <div>
+          <label>Tu nombre</label>
+          <input id="pracName" placeholder="Ej: Pablo" />
+        </div>
+        <div>
+          <label>Nº de preguntas</label>
+          <select id="pracN">
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+      </div>
 
+      <div class="muted" style="margin-top:10px;">Elige zonas (puedes marcar varias):</div>
+      <div class="checks">
+        <div class="chk"><input id="zEuropa" type="checkbox" checked><div>Europa</div></div>
+        <div class="chk"><input id="zAmerica" type="checkbox" checked><div>América</div></div>
+        <div class="chk"><input id="zAsia" type="checkbox" checked><div>Asia</div></div>
+        <div class="chk"><input id="zAfrica" type="checkbox" checked><div>África</div></div>
+        <div class="chk"><input id="zOceania" type="checkbox"><div>Oceanía</div></div>
+        <div class="chk"><input id="zME" type="checkbox" checked><div>Oriente Medio</div></div>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <button id="btnPracticeStart">Empezar Práctica</button>
+        <button id="btnBack2">Volver al menú</button>
+      </div>
+      <div class="tiny">En práctica no hay seed: cada vez sale distinto, pero solo de las zonas elegidas.</div>
+    </div>
+
+    <!-- GAME -->
     <div id="game" class="qbox" style="display:none;">
       <div id="qHeader"></div>
 
@@ -74,33 +146,45 @@
       </div>
 
       <div id="feedback" class="status"></div>
+
+      <div class="row" style="margin-top:10px;">
+        <button id="btnExit">Salir al menú</button>
+      </div>
     </div>
 
+    <!-- RESULT -->
     <div id="result" class="qbox" style="display:none;">
       <div id="finalScore" style="font-size:18px; font-weight:900;"></div>
-      <div class="muted">Texto listo para WhatsApp:</div>
-      <textarea id="shareText" readonly></textarea>
-      <div class="row">
-        <button id="btnCopy">Copiar</button>
-        <button id="btnRestart">Jugar otra vez (misma seed)</button>
+
+      <div id="shareBlock" style="display:none;">
+        <div class="muted">Texto listo para WhatsApp:</div>
+        <textarea id="shareText" readonly></textarea>
+        <div class="row">
+          <button id="btnCopy">Copiar</button>
+          <button id="btnRestartSame">Jugar otra vez (misma seed)</button>
+        </div>
       </div>
 
       <div class="review" id="reviewBox" style="display:none;">
         <h2>Repaso 🧠 (lo que no fue perfecto)</h2>
-        <div class="muted" style="margin-top:0;">Consejo: rejuega otra vez con la misma seed para clavarlas.</div>
+        <div class="muted" style="margin-top:0;">Consejo: rejuega para clavarlas.</div>
         <ul id="reviewList"></ul>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <button id="btnResultMenu">Volver al menú</button>
       </div>
     </div>
 
     <div class="footer">
-      Tip: acordad una seed por WhatsApp (ej. “seed 74219”) y jugáis cada uno desde su móvil/PC.
+      Competición = seed + WhatsApp · Práctica = sin seed + zonas
     </div>
   </div>
 
 <script>
 /* =============================
    DATA: país, capital(es), continente, región
-   ============================= */
+============================= */
 const DATA = [
   // Europa
   ["España","Madrid","Europa",""],
@@ -148,7 +232,7 @@ const DATA = [
   ["Brasil","Brasilia | Brasília","América",""],
   ["Bolivia","Sucre | La Paz","América",""],
 
-  // Asia (incluye Oriente Medio)
+  // Asia + Oriente Medio
   ["Japón","Tokio","Asia",""],
   ["China","Pekín | Beijing","Asia",""],
   ["Corea del Sur","Seúl","Asia",""],
@@ -202,9 +286,11 @@ const DATA = [
   ["Papúa Nueva Guinea","Port Moresby","Oceanía",""],
 ];
 
-/* -----------------------------
-   PRNG seed (Mulberry32)
------------------------------ */
+/* =============================
+   Helpers
+============================= */
+const $ = (id) => document.getElementById(id);
+
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function() {
@@ -222,16 +308,6 @@ function shuffleInPlace(arr, rng) {
   }
 }
 
-/* -----------------------------
-   CONFIG
------------------------------ */
-const NUM_Q = 10;
-const QUOTAS = { "Europa":2, "América":2, "Asia":2, "África":2 };
-const MUST_HAVE_REGION = "Oriente Medio";
-
-/* -----------------------------
-   Normalización y scoring
------------------------------ */
 function normBasic(s) {
   return (s ?? "")
     .trim()
@@ -261,10 +337,20 @@ function fmtScore(x) {
   return s.replace(".", ",");
 }
 
-/* -----------------------------
-   Selección preguntas con cuotas + garantía OM
------------------------------ */
-function pickQuestions(seed) {
+function setFeedback(msg, style) {
+  $("feedback").textContent = msg;
+  $("feedback").className = "status " + (style || "");
+}
+
+/* =============================
+   Selection logic
+============================= */
+const COMP_NUM_Q = 10;
+const COMP_QUOTAS = { "Europa":2, "América":2, "Asia":2, "África":2 };
+const MUST_HAVE_REGION = "Oriente Medio";
+
+// competición: cuotas + 2 libres + garantía Oriente Medio
+function pickCompetitionQuestions(seed) {
   const rng = mulberry32(seed);
 
   const byCont = {};
@@ -277,55 +363,101 @@ function pickQuestions(seed) {
     const avail = pool.filter(x => !used.has(x[0]));
     if (avail.length < k) throw new Error("No hay suficientes países para cumplir la selección.");
     shuffleInPlace(avail, rng);
-    for (let i=0; i<k; i++) {
-      picked.push(avail[i]);
-      used.add(avail[i][0]);
-    }
+    for (let i=0; i<k; i++) { picked.push(avail[i]); used.add(avail[i][0]); }
   }
 
-  for (const [cont, k] of Object.entries(QUOTAS)) take(byCont[cont] || [], k);
+  for (const [cont, k] of Object.entries(COMP_QUOTAS)) take(byCont[cont] || [], k);
 
-  const remaining = NUM_Q - picked.length; // 2
+  const remaining = COMP_NUM_Q - picked.length; // 2
   const poolAny = DATA.filter(x => !used.has(x[0]));
   shuffleInPlace(poolAny, rng);
-  for (let i=0; i<remaining; i++) {
-    picked.push(poolAny[i]);
-    used.add(poolAny[i][0]);
-  }
+  for (let i=0; i<remaining; i++) { picked.push(poolAny[i]); used.add(poolAny[i][0]); }
 
-  // Garantía Oriente Medio
   if (!picked.some(x => x[3] === MUST_HAVE_REGION)) {
     const mePool = DATA.filter(x => x[3] === MUST_HAVE_REGION && !picked.some(p => p[0] === x[0]));
-    if (mePool.length > 0) {
-      shuffleInPlace(mePool, rng);
-      picked[picked.length - 1] = mePool[0];
-    }
+    if (mePool.length > 0) { shuffleInPlace(mePool, rng); picked[picked.length - 1] = mePool[0]; }
   }
 
   shuffleInPlace(picked, rng);
   return picked;
 }
 
-/* -----------------------------
-   Estado + Repaso
------------------------------ */
-const $ = (id) => document.getElementById(id);
+// práctica: filtrar por zonas + sample aleatorio sin seed
+function pickPracticeQuestions(n, zones) {
+  // zones: {continents:Set, includeME:boolean}
+  const continents = zones.continents;
+  const includeME = zones.includeME;
 
+  let pool = DATA.filter(x => continents.has(x[2]));
+  if (includeME) {
+    // añade Oriente Medio aunque el continente Asia no esté marcado
+    const me = DATA.filter(x => x[3] === MUST_HAVE_REGION);
+    const keys = new Set(pool.map(p => p[0]));
+    for (const item of me) if (!keys.has(item[0])) pool.push(item);
+  } else {
+    // si NO includeME, quitamos los ME del pool (para poder practicar Asia sin ME si quieren)
+    pool = pool.filter(x => x[3] !== MUST_HAVE_REGION);
+  }
+
+  // seguridad: si el usuario no marca nada
+  if (pool.length === 0) throw new Error("No hay países con esos filtros. Marca alguna zona.");
+
+  // sample sin reemplazo
+  const copy = pool.slice();
+  // shuffle con Math.random (sin seed)
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, Math.min(n, copy.length));
+}
+
+/* =============================
+   Game state
+============================= */
 let state = {
-  seed: null,
+  mode: null,              // "competition" | "practice"
+  seed: null,              // solo competición
   name: "",
   questions: [],
   idx: 0,
   score: 0,
   locked: false,
   lastWasAnswered: false,
-  history: [] // {pais, capital, continente, region, user, points, type}
+  history: [],             // para repaso
+  totalQ: 0,
+  restartFn: null          // función para "jugar otra vez"
 };
 
-function setFeedback(msg, style) {
-  const el = $("feedback");
-  el.textContent = msg;
-  el.className = "status " + (style || "");
+function resetViews() {
+  $("menu").style.display = "none";
+  $("setupComp").style.display = "none";
+  $("setupPractice").style.display = "none";
+  $("game").style.display = "none";
+  $("result").style.display = "none";
+}
+
+function showMenu() {
+  resetViews();
+  $("menu").style.display = "block";
+}
+
+function startGameCommon({ mode, name, questions, seed=null, restartFn }) {
+  state.mode = mode;
+  state.name = name || "Jugador";
+  state.questions = questions;
+  state.seed = seed;
+  state.idx = 0;
+  state.score = 0;
+  state.locked = false;
+  state.lastWasAnswered = false;
+  state.history = [];
+  state.totalQ = questions.length;
+  state.restartFn = restartFn;
+
+  resetViews();
+  $("game").style.display = "block";
+  showQuestion();
 }
 
 function showQuestion() {
@@ -336,7 +468,11 @@ function showQuestion() {
 
   const q = state.questions[state.idx];
   const regionPill = q[3] ? `<span class="pill">${q[3]}</span>` : "";
-  $("qHeader").innerHTML = `<b>Pregunta ${state.idx+1}/${NUM_Q}</b> <span class="pill">${q[2]}</span> ${regionPill}`;
+  $("qHeader").innerHTML =
+    `<b>${state.mode === "competition" ? "Competición" : "Práctica"}</b>` +
+    ` <span class="pill">${state.idx+1}/${state.totalQ}</span>` +
+    ` <span class="pill">${q[2]}</span> ${regionPill}`;
+
   $("qLabel").textContent = `Capital de ${q[0]}:`;
   $("answer").value = "";
   $("answer").focus();
@@ -345,64 +481,7 @@ function showQuestion() {
     ? "Este país admite varias respuestas válidas (con poner una te vale)."
     : "";
 
-  setFeedback("");
-}
-
-function buildReview() {
-  const list = $("reviewList");
-  list.innerHTML = "";
-
-  const imperfect = state.history.filter(h => h.points < 1);
-
-  if (imperfect.length === 0) {
-    $("reviewBox").style.display = "block";
-    list.innerHTML = "<li>🔥 Perfecto: todo correcto. No hay nada que repasar.</li>";
-    return;
-  }
-
-  $("reviewBox").style.display = "block";
-
-  for (const h of imperfect) {
-    const badge = h.points === 0.5 ? "🟡" : "❌";
-    const got = h.user.trim() ? `Tu respuesta: <code>${h.user}</code>` : "Tu respuesta: <code>(vacío)</code>";
-    const li = document.createElement("li");
-    li.innerHTML = `${badge} <b>${h.pais}</b> → válida: <code>${h.capital}</code> · ${got}`;
-    list.appendChild(li);
-  }
-}
-
-function finish() {
-  $("game").style.display = "none";
-  $("result").style.display = "block";
-
-  $("finalScore").textContent = `${state.name} → ${fmtScore(state.score)}/${NUM_Q}`;
-
-  const share = `${state.name} -> ${fmtScore(state.score)}/${NUM_Q} (seed ${state.seed})`;
-  $("shareText").value = share;
-
-  buildReview();
-}
-
-function startGame() {
-  const name = $("name").value.trim() || "Jugador";
-  const seedTxt = $("seed").value.trim();
-
-  if (!seedTxt) return alert("Pon una seed (o pulsa 'Generar seed aleatoria').");
-  const seed = Number(seedTxt);
-  if (!Number.isFinite(seed) || seed <= 0) return alert("La seed debe ser un número positivo (ej: 74219).");
-
-  state.name = name;
-  state.seed = Math.floor(seed);
-  state.questions = pickQuestions(state.seed);
-  state.idx = 0;
-  state.score = 0;
-  state.history = [];
-
-  $("reviewBox").style.display = "none";
-  $("result").style.display = "none";
-  $("game").style.display = "block";
-
-  showQuestion();
+  setFeedback("", "");
 }
 
 function submitAnswer() {
@@ -420,17 +499,12 @@ function submitAnswer() {
     continente: q[2],
     region: q[3],
     user: userRaw,
-    points: res.points,
-    type: res.type
+    points: res.points
   });
 
-  if (res.points === 1) {
-    setFeedback("✅ Correcto (+1)", "ok");
-  } else if (res.points === 0.5) {
-    setFeedback(`🟡 Casi. Te faltó alguna tilde. (+0,5)\nVálida: ${q[1]}`, "warn");
-  } else {
-    setFeedback(`❌ Incorrecto (+0)\nVálida: ${q[1]}`, "bad");
-  }
+  if (res.points === 1) setFeedback("✅ Correcto (+1)", "ok");
+  else if (res.points === 0.5) setFeedback(`🟡 Casi. Te faltó alguna tilde. (+0,5)\nVálida: ${q[1]}`, "warn");
+  else setFeedback(`❌ Incorrecto (+0)\nVálida: ${q[1]}`, "bad");
 
   state.locked = true;
   state.lastWasAnswered = true;
@@ -442,25 +516,131 @@ function submitAnswer() {
 function nextQuestion() {
   if (!state.lastWasAnswered) return;
   state.idx++;
-  if (state.idx >= NUM_Q) finish();
+  if (state.idx >= state.totalQ) finish();
   else showQuestion();
 }
 
-/* -----------------------------
-   Eventos
------------------------------ */
-$("btnStart").addEventListener("click", startGame);
+function buildReview() {
+  const list = $("reviewList");
+  list.innerHTML = "";
+  const imperfect = state.history.filter(h => h.points < 1);
 
-$("btnNewSeed").addEventListener("click", () => {
-  const seed = Math.floor(Date.now() % 1000000000);
-  $("seed").value = String(seed);
+  $("reviewBox").style.display = "block";
+  if (imperfect.length === 0) {
+    list.innerHTML = "<li>🔥 Perfecto: todo correcto. No hay nada que repasar.</li>";
+    return;
+  }
+  for (const h of imperfect) {
+    const badge = h.points === 0.5 ? "🟡" : "❌";
+    const got = h.user.trim() ? `Tu respuesta: <code>${h.user}</code>` : "Tu respuesta: <code>(vacío)</code>";
+    const li = document.createElement("li");
+    li.innerHTML = `${badge} <b>${h.pais}</b> → válida: <code>${h.capital}</code> · ${got}`;
+    list.appendChild(li);
+  }
+}
+
+function finish() {
+  resetViews();
+  $("result").style.display = "block";
+
+  $("finalScore").textContent = `${state.name} → ${fmtScore(state.score)}/${state.totalQ}`;
+
+  // Competición: mostrar bloque WhatsApp + botón repetir misma seed
+  if (state.mode === "competition") {
+    $("shareBlock").style.display = "block";
+    $("shareText").value = `${state.name} -> ${fmtScore(state.score)}/${state.totalQ} (seed ${state.seed})`;
+    $("btnRestartSame").style.display = "inline-block";
+  } else {
+    $("shareBlock").style.display = "none";
+  }
+
+  buildReview();
+}
+
+/* =============================
+   Menu actions
+============================= */
+$("goComp").addEventListener("click", () => {
+  resetViews();
+  $("setupComp").style.display = "block";
 });
 
-$("btnSubmit").addEventListener("click", submitAnswer);
-$("btnNext").addEventListener("click", nextQuestion);
+$("goPractice").addEventListener("click", () => {
+  resetViews();
+  $("setupPractice").style.display = "block";
+});
 
-$("answer").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") submitAnswer();
+$("btnBack1").addEventListener("click", showMenu);
+$("btnBack2").addEventListener("click", showMenu);
+$("btnExit").addEventListener("click", showMenu);
+$("btnResultMenu").addEventListener("click", showMenu);
+
+/* =============================
+   Competition start
+============================= */
+$("btnCompSeed").addEventListener("click", () => {
+  const seed = Math.floor(Date.now() % 1000000000);
+  $("compSeed").value = String(seed);
+});
+
+$("btnCompStart").addEventListener("click", () => {
+  const name = $("compName").value.trim() || "Jugador";
+  const seedTxt = $("compSeed").value.trim();
+  if (!seedTxt) return alert("Pon una seed (o pulsa Generar seed).");
+  const seed = Number(seedTxt);
+  if (!Number.isFinite(seed) || seed <= 0) return alert("La seed debe ser un número positivo (ej: 74219).");
+
+  const questions = pickCompetitionQuestions(Math.floor(seed));
+  startGameCommon({
+    mode: "competition",
+    name,
+    questions,
+    seed: Math.floor(seed),
+    restartFn: () => {
+      const q2 = pickCompetitionQuestions(Math.floor(seed));
+      startGameCommon({ mode:"competition", name, questions:q2, seed:Math.floor(seed), restartFn: state.restartFn });
+    }
+  });
+});
+
+/* =============================
+   Practice start
+============================= */
+$("btnPracticeStart").addEventListener("click", () => {
+  const name = $("pracName").value.trim() || "Jugador";
+  const n = Number($("pracN").value) || 10;
+
+  const continents = new Set();
+  if ($("zEuropa").checked) continents.add("Europa");
+  if ($("zAmerica").checked) continents.add("América");
+  if ($("zAsia").checked) continents.add("Asia");
+  if ($("zAfrica").checked) continents.add("África");
+  if ($("zOceania").checked) continents.add("Oceanía");
+
+  const includeME = $("zME").checked;
+
+  try {
+    const questions = pickPracticeQuestions(n, { continents, includeME });
+    startGameCommon({
+      mode: "practice",
+      name,
+      questions,
+      seed: null,
+      restartFn: () => {
+        const q2 = pickPracticeQuestions(n, { continents, includeME });
+        startGameCommon({ mode:"practice", name, questions:q2, seed:null, restartFn: state.restartFn });
+      }
+    });
+  } catch (e) {
+    alert(e.message || "Error creando práctica. Prueba a marcar más zonas.");
+  }
+});
+
+/* =============================
+   Result buttons
+============================= */
+$("btnRestartSame").addEventListener("click", () => {
+  if (typeof state.restartFn === "function") state.restartFn();
 });
 
 $("btnCopy").addEventListener("click", async () => {
@@ -474,7 +654,17 @@ $("btnCopy").addEventListener("click", async () => {
   }
 });
 
-$("btnRestart").addEventListener("click", () => startGame());
+/* =============================
+   In-game buttons
+============================= */
+$("btnSubmit").addEventListener("click", submitAnswer);
+$("btnNext").addEventListener("click", nextQuestion);
+$("answer").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") submitAnswer();
+});
+
+/* Start on menu */
+showMenu();
 </script>
 </body>
 </html>
