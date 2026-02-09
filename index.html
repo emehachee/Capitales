@@ -6,7 +6,7 @@
   <title>Juego de Capitales (Seed)</title>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 18px; line-height: 1.35; }
-    .card { max-width: 780px; margin: 0 auto; padding: 16px; border: 1px solid #ddd; border-radius: 14px; }
+    .card { max-width: 900px; margin: 0 auto; padding: 16px; border: 1px solid #ddd; border-radius: 14px; }
     h1 { margin: 0 0 10px 0; font-size: 20px; }
     .row { display: flex; gap: 10px; flex-wrap: wrap; }
     .row > * { flex: 1; min-width: 180px; }
@@ -16,12 +16,21 @@
     button:disabled { opacity: 0.5; cursor: not-allowed; }
     .muted { color:#666; font-size: 13px; margin-top: 8px; }
     .qbox { margin-top: 14px; padding: 12px; border: 1px solid #eee; border-radius: 12px; }
-    .status { margin-top: 10px; font-weight: 600; }
+    .status { margin-top: 10px; font-weight: 800; white-space: pre-line; }
     .ok { color: #0a7a29; }
+    .warn { color: #b36b00; }
     .bad { color: #b00020; }
     .pill { display:inline-block; padding: 3px 8px; border: 1px solid #ddd; border-radius: 999px; font-size: 12px; color:#444; margin-left: 8px; }
     textarea { margin-top: 10px; height: 90px; }
     .footer { margin-top: 14px; font-size: 12px; color:#666; }
+    .mini { font-size: 12px; color:#666; margin-top: 6px; }
+
+    /* Repaso */
+    .review { margin-top: 12px; }
+    .review h2 { font-size: 16px; margin: 0 0 8px 0; }
+    .review ul { margin: 0; padding-left: 18px; }
+    .review li { margin: 6px 0; }
+    code { background: #f5f5f5; padding: 1px 6px; border-radius: 8px; }
   </style>
 </head>
 <body>
@@ -45,7 +54,9 @@
     </div>
 
     <p class="muted">
-      Mayúsculas/minúsculas NO importan. Pero si una letra o tilde está mal, cuenta como fallo.
+      ✅ Mayúsculas/minúsculas NO importan. <br/>
+      🟡 Si está bien pero te falta/pones mal una tilde → 0,5 puntos. <br/>
+      ❌ Si está mal escrita (letras), 0 puntos.
     </p>
 
     <div id="game" class="qbox" style="display:none;">
@@ -54,23 +65,30 @@
       <div style="margin-top:10px;">
         <label id="qLabel">Capital de …</label>
         <input id="answer" placeholder="Escribe la capital" autocomplete="off" />
+        <div class="mini" id="hint"></div>
       </div>
 
       <div class="row" style="margin-top:10px;">
         <button id="btnSubmit">Responder</button>
-        <button id="btnSkip">Saltar</button>
+        <button id="btnNext" disabled>Siguiente</button>
       </div>
 
       <div id="feedback" class="status"></div>
     </div>
 
     <div id="result" class="qbox" style="display:none;">
-      <div id="finalScore" style="font-size:18px; font-weight:700;"></div>
+      <div id="finalScore" style="font-size:18px; font-weight:900;"></div>
       <div class="muted">Texto listo para WhatsApp:</div>
       <textarea id="shareText" readonly></textarea>
       <div class="row">
         <button id="btnCopy">Copiar</button>
         <button id="btnRestart">Jugar otra vez (misma seed)</button>
+      </div>
+
+      <div class="review" id="reviewBox" style="display:none;">
+        <h2>Repaso 🧠 (lo que no fue perfecto)</h2>
+        <div class="muted" style="margin-top:0;">Consejo: rejuega otra vez con la misma seed para clavarlas.</div>
+        <ul id="reviewList"></ul>
       </div>
     </div>
 
@@ -80,105 +98,112 @@
   </div>
 
 <script>
-/* -----------------------------
-   Datos (país, capital, continente) en ESPAÑOL
-   Continentes: Europa, América, Asia, África, Oceanía
------------------------------ */
+/* =============================
+   DATA: país, capital(es), continente, región
+   ============================= */
 const DATA = [
   // Europa
-  ["España","Madrid","Europa"],
-  ["Francia","París","Europa"],
-  ["Italia","Roma","Europa"],
-  ["Alemania","Berlín","Europa"],
-  ["Portugal","Lisboa","Europa"],
-  ["Países Bajos","Ámsterdam","Europa"],
-  ["Bélgica","Bruselas","Europa"],
-  ["Suiza","Berna","Europa"],
-  ["Austria","Viena","Europa"],
-  ["Irlanda","Dublín","Europa"],
-  ["Reino Unido","Londres","Europa"],
-  ["Noruega","Oslo","Europa"],
-  ["Suecia","Estocolmo","Europa"],
-  ["Finlandia","Helsinki","Europa"],
-  ["Dinamarca","Copenhague","Europa"],
-  ["Polonia","Varsovia","Europa"],
-  ["Chequia","Praga","Europa"],
-  ["Hungría","Budapest","Europa"],
-  ["Rumanía","Bucarest","Europa"],
-  ["Grecia","Atenas","Europa"],
-  ["Ucrania","Kiev | Kyiv","Europa"],
+  ["España","Madrid","Europa",""],
+  ["Francia","París","Europa",""],
+  ["Italia","Roma","Europa",""],
+  ["Alemania","Berlín","Europa",""],
+  ["Portugal","Lisboa","Europa",""],
+  ["Países Bajos","Ámsterdam","Europa",""],
+  ["Bélgica","Bruselas","Europa",""],
+  ["Suiza","Berna","Europa",""],
+  ["Austria","Viena","Europa",""],
+  ["Irlanda","Dublín","Europa",""],
+  ["Reino Unido","Londres","Europa",""],
+  ["Noruega","Oslo","Europa",""],
+  ["Suecia","Estocolmo","Europa",""],
+  ["Finlandia","Helsinki","Europa",""],
+  ["Dinamarca","Copenhague","Europa",""],
+  ["Polonia","Varsovia","Europa",""],
+  ["Chequia","Praga","Europa",""],
+  ["Hungría","Budapest","Europa",""],
+  ["Rumanía","Bucarest","Europa",""],
+  ["Grecia","Atenas","Europa",""],
+  ["Ucrania","Kiev | Kyiv","Europa",""],
 
   // América
-  ["Estados Unidos","Washington D. C. | Washington DC | Washington","América"],
-  ["Canadá","Ottawa","América"],
-  ["México","Ciudad de México","América"],
-  ["Guatemala","Ciudad de Guatemala","América"],
-  ["Honduras","Tegucigalpa","América"],
-  ["El Salvador","San Salvador","América"],
-  ["Nicaragua","Managua","América"],
-  ["Costa Rica","San José","América"],
-  ["Panamá","Ciudad de Panamá","América"],
-  ["Cuba","La Habana","América"],
-  ["República Dominicana","Santo Domingo","América"],
-  ["Colombia","Bogotá","América"],
-  ["Venezuela","Caracas","América"],
-  ["Ecuador","Quito","América"],
-  ["Perú","Lima","América"],
-  ["Chile","Santiago","América"],
-  ["Argentina","Buenos Aires","América"],
-  ["Uruguay","Montevideo","América"],
-  ["Paraguay","Asunción","América"],
-  ["Brasil","Brasilia | Brasília","América"],
-  ["Bolivia","Sucre | La Paz","América"],
+  ["Estados Unidos","Washington D. C. | Washington DC | Washington D.C. | Washington","América",""],
+  ["Canadá","Ottawa","América",""],
+  ["México","Ciudad de México","América",""],
+  ["Guatemala","Ciudad de Guatemala","América",""],
+  ["Honduras","Tegucigalpa","América",""],
+  ["El Salvador","San Salvador","América",""],
+  ["Nicaragua","Managua","América",""],
+  ["Costa Rica","San José","América",""],
+  ["Panamá","Ciudad de Panamá","América",""],
+  ["Cuba","La Habana","América",""],
+  ["República Dominicana","Santo Domingo","América",""],
+  ["Colombia","Bogotá","América",""],
+  ["Venezuela","Caracas","América",""],
+  ["Ecuador","Quito","América",""],
+  ["Perú","Lima","América",""],
+  ["Chile","Santiago","América",""],
+  ["Argentina","Buenos Aires","América",""],
+  ["Uruguay","Montevideo","América",""],
+  ["Paraguay","Asunción","América",""],
+  ["Brasil","Brasilia | Brasília","América",""],
+  ["Bolivia","Sucre | La Paz","América",""],
 
-  // Asia
-  ["Japón","Tokio","Asia"],
-  ["China","Pekín | Beijing","Asia"],
-  ["Corea del Sur","Seúl","Asia"],
-  ["Corea del Norte","Pionyang | Pyongyang","Asia"],
-  ["Vietnam","Hanói","Asia"],
-  ["Tailandia","Bangkok","Asia"],
-  ["Camboya","Nom Pen | Phnom Penh","Asia"],
-  ["Malasia","Kuala Lumpur","Asia"],
-  ["Singapur","Singapur","Asia"],
-  ["Indonesia","Yakarta","Asia"],
-  ["Filipinas","Manila","Asia"],
-  ["India","Nueva Delhi | Delhi","Asia"],
-  ["Pakistán","Islamabad","Asia"],
-  ["Irán","Teherán","Asia"],
-  ["Irak","Bagdad","Asia"],
-  ["Arabia Saudí","Riad","Asia"],
-  ["Emiratos Árabes Unidos","Abu Dabi","Asia"],
-  ["Israel","Jerusalén","Asia"],
-  ["Turquía","Ankara","Asia"],
+  // Asia (incluye Oriente Medio)
+  ["Japón","Tokio","Asia",""],
+  ["China","Pekín | Beijing","Asia",""],
+  ["Corea del Sur","Seúl","Asia",""],
+  ["Corea del Norte","Pionyang | Pyongyang","Asia",""],
+  ["Vietnam","Hanói","Asia",""],
+  ["Tailandia","Bangkok","Asia",""],
+  ["Camboya","Nom Pen | Phnom Penh","Asia",""],
+  ["Malasia","Kuala Lumpur","Asia",""],
+  ["Singapur","Singapur","Asia",""],
+  ["Indonesia","Yakarta","Asia",""],
+  ["Filipinas","Manila","Asia",""],
+  ["India","Nueva Delhi | Delhi","Asia",""],
+  ["Pakistán","Islamabad","Asia",""],
+  ["Irán","Teherán","Asia","Oriente Medio"],
+  ["Irak","Bagdad","Asia","Oriente Medio"],
+  ["Arabia Saudí","Riad","Asia","Oriente Medio"],
+  ["Emiratos Árabes Unidos","Abu Dabi","Asia","Oriente Medio"],
+  ["Catar","Doha","Asia","Oriente Medio"],
+  ["Kuwait","Ciudad de Kuwait","Asia","Oriente Medio"],
+  ["Baréin","Manama","Asia","Oriente Medio"],
+  ["Omán","Mascate","Asia","Oriente Medio"],
+  ["Yemen","Saná | Sana'a","Asia","Oriente Medio"],
+  ["Israel","Jerusalén","Asia","Oriente Medio"],
+  ["Jordania","Amán","Asia","Oriente Medio"],
+  ["Líbano","Beirut","Asia","Oriente Medio"],
+  ["Siria","Damasco","Asia","Oriente Medio"],
+  ["Turquía","Ankara","Asia","Oriente Medio"],
 
   // África
-  ["Marruecos","Rabat","África"],
-  ["Argelia","Argel","África"],
-  ["Túnez","Túnez","África"],
-  ["Egipto","El Cairo","África"],
-  ["Senegal","Dakar","África"],
-  ["Mali","Bamako","África"],
-  ["Níger","Niamey","África"],
-  ["Nigeria","Abuya","África"],
-  ["Ghana","Acra","África"],
-  ["Costa de Marfil","Yamusukro | Yamoussoukro","África"],
-  ["Camerún","Yaundé | Yaoundé","África"],
-  ["Kenia","Nairobi","África"],
-  ["Uganda","Kampala","África"],
-  ["Tanzania","Dodoma","África"],
-  ["Etiopía","Adís Abeba | Addis Abeba","África"],
-  ["Sudáfrica","Pretoria | Ciudad del Cabo | Bloemfontein","África"],
+  ["Marruecos","Rabat","África",""],
+  ["Argelia","Argel","África",""],
+  ["Túnez","Túnez","África",""],
+  ["Egipto","El Cairo","África",""],
+  ["Senegal","Dakar","África",""],
+  ["Mali","Bamako","África",""],
+  ["Níger","Niamey","África",""],
+  ["Nigeria","Abuya","África",""],
+  ["Ghana","Acra","África",""],
+  ["Costa de Marfil","Yamusukro | Yamoussoukro","África",""],
+  ["Camerún","Yaundé | Yaoundé","África",""],
+  ["Kenia","Nairobi","África",""],
+  ["Uganda","Kampala","África",""],
+  ["Tanzania","Dodoma","África",""],
+  ["Etiopía","Adís Abeba | Addis Abeba","África",""],
+  ["Sudáfrica","Pretoria | Ciudad del Cabo | Bloemfontein","África",""],
 
   // Oceanía
-  ["Australia","Canberra","Oceanía"],
-  ["Nueva Zelanda","Wellington","Oceanía"],
-  ["Fiyi","Suva","Oceanía"],
-  ["Papúa Nueva Guinea","Port Moresby","Oceanía"],
+  ["Australia","Canberra","Oceanía",""],
+  ["Nueva Zelanda","Wellington","Oceanía",""],
+  ["Fiyi","Suva","Oceanía",""],
+  ["Papúa Nueva Guinea","Port Moresby","Oceanía",""],
 ];
 
 /* -----------------------------
-   PRNG con seed (Mulberry32)
+   PRNG seed (Mulberry32)
 ----------------------------- */
 function mulberry32(seed) {
   let a = seed >>> 0;
@@ -198,142 +223,232 @@ function shuffleInPlace(arr, rng) {
 }
 
 /* -----------------------------
-   Selección de preguntas: 10
-   Cuotas: 2 Europa, 2 América, 2 Asia, 2 África + 2 libre
+   CONFIG
 ----------------------------- */
 const NUM_Q = 10;
 const QUOTAS = { "Europa":2, "América":2, "Asia":2, "África":2 };
+const MUST_HAVE_REGION = "Oriente Medio";
 
-function norm(s) { return (s ?? "").trim().toLocaleLowerCase("es"); } // mayúsculas no importan
+/* -----------------------------
+   Normalización y scoring
+----------------------------- */
+function normBasic(s) {
+  return (s ?? "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLocaleLowerCase("es");
+}
+function stripAccents(s) {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
 function acceptedAnswers(capitalStr) {
-  return capitalStr.split("|").map(x => norm(x));
+  return capitalStr.split("|").map(x => normBasic(x));
+}
+function scoreAnswer(userRaw, capitalStr) {
+  const user = normBasic(userRaw);
+  const accepted = acceptedAnswers(capitalStr);
+
+  if (accepted.includes(user)) return { points: 1, type: "full" };
+
+  const userNoAcc = stripAccents(user);
+  const acceptedNoAcc = accepted.map(a => stripAccents(a));
+  if (acceptedNoAcc.includes(userNoAcc)) return { points: 0.5, type: "half" };
+
+  return { points: 0, type: "none" };
+}
+function fmtScore(x) {
+  const s = (Math.round(x * 2) / 2).toString();
+  return s.replace(".", ",");
 }
 
+/* -----------------------------
+   Selección preguntas con cuotas + garantía OM
+----------------------------- */
 function pickQuestions(seed) {
   const rng = mulberry32(seed);
+
   const byCont = {};
-  for (const item of DATA) {
-    const cont = item[2];
-    (byCont[cont] ||= []).push(item);
-  }
+  for (const item of DATA) (byCont[item[2]] ||= []).push(item);
 
   const picked = [];
-  const usedCountries = new Set();
+  const used = new Set();
 
-  // cuotas
-  for (const [cont, k] of Object.entries(QUOTAS)) {
-    const pool = (byCont[cont] || []).filter(x => !usedCountries.has(x[0]));
-    if (pool.length < k) throw new Error(`No hay suficientes países en ${cont}.`);
-    // sample k
-    shuffleInPlace(pool, rng);
+  function take(pool, k) {
+    const avail = pool.filter(x => !used.has(x[0]));
+    if (avail.length < k) throw new Error("No hay suficientes países para cumplir la selección.");
+    shuffleInPlace(avail, rng);
     for (let i=0; i<k; i++) {
-      picked.push(pool[i]);
-      usedCountries.add(pool[i][0]);
+      picked.push(avail[i]);
+      used.add(avail[i][0]);
     }
   }
 
-  // resto libre
-  const remaining = NUM_Q - picked.length; // 2
-  const poolAny = DATA.filter(x => !usedCountries.has(x[0]));
-  shuffleInPlace(poolAny, rng);
-  for (let i=0; i<remaining; i++) picked.push(poolAny[i]);
+  for (const [cont, k] of Object.entries(QUOTAS)) take(byCont[cont] || [], k);
 
-  // mezclar
+  const remaining = NUM_Q - picked.length; // 2
+  const poolAny = DATA.filter(x => !used.has(x[0]));
+  shuffleInPlace(poolAny, rng);
+  for (let i=0; i<remaining; i++) {
+    picked.push(poolAny[i]);
+    used.add(poolAny[i][0]);
+  }
+
+  // Garantía Oriente Medio
+  if (!picked.some(x => x[3] === MUST_HAVE_REGION)) {
+    const mePool = DATA.filter(x => x[3] === MUST_HAVE_REGION && !picked.some(p => p[0] === x[0]));
+    if (mePool.length > 0) {
+      shuffleInPlace(mePool, rng);
+      picked[picked.length - 1] = mePool[0];
+    }
+  }
+
   shuffleInPlace(picked, rng);
   return picked;
 }
 
 /* -----------------------------
-   UI / Game state
+   Estado + Repaso
 ----------------------------- */
 const $ = (id) => document.getElementById(id);
 
 let state = {
   seed: null,
-  rng: null,
   name: "",
   questions: [],
   idx: 0,
   score: 0,
-  started: false
+  locked: false,
+  lastWasAnswered: false,
+  history: [] // {pais, capital, continente, region, user, points, type}
 };
 
-function setFeedback(msg, ok=null) {
+function setFeedback(msg, style) {
   const el = $("feedback");
   el.textContent = msg;
-  el.className = "status " + (ok === true ? "ok" : ok === false ? "bad" : "");
+  el.className = "status " + (style || "");
 }
 
 function showQuestion() {
+  state.locked = false;
+  state.lastWasAnswered = false;
+  $("btnNext").disabled = true;
+  $("btnSubmit").disabled = false;
+
   const q = state.questions[state.idx];
-  $("qHeader").innerHTML = `<b>Pregunta ${state.idx+1}/${NUM_Q}</b> <span class="pill">${q[2]}</span>`;
+  const regionPill = q[3] ? `<span class="pill">${q[3]}</span>` : "";
+  $("qHeader").innerHTML = `<b>Pregunta ${state.idx+1}/${NUM_Q}</b> <span class="pill">${q[2]}</span> ${regionPill}`;
   $("qLabel").textContent = `Capital de ${q[0]}:`;
   $("answer").value = "";
   $("answer").focus();
+
+  $("hint").textContent = q[1].includes("|")
+    ? "Este país admite varias respuestas válidas (con poner una te vale)."
+    : "";
+
   setFeedback("");
+}
+
+function buildReview() {
+  const list = $("reviewList");
+  list.innerHTML = "";
+
+  const imperfect = state.history.filter(h => h.points < 1);
+
+  if (imperfect.length === 0) {
+    $("reviewBox").style.display = "block";
+    list.innerHTML = "<li>🔥 Perfecto: todo correcto. No hay nada que repasar.</li>";
+    return;
+  }
+
+  $("reviewBox").style.display = "block";
+
+  for (const h of imperfect) {
+    const badge = h.points === 0.5 ? "🟡" : "❌";
+    const got = h.user.trim() ? `Tu respuesta: <code>${h.user}</code>` : "Tu respuesta: <code>(vacío)</code>";
+    const li = document.createElement("li");
+    li.innerHTML = `${badge} <b>${h.pais}</b> → válida: <code>${h.capital}</code> · ${got}`;
+    list.appendChild(li);
+  }
 }
 
 function finish() {
   $("game").style.display = "none";
   $("result").style.display = "block";
 
-  $("finalScore").textContent = `${state.name} → ${state.score}/${NUM_Q}`;
+  $("finalScore").textContent = `${state.name} → ${fmtScore(state.score)}/${NUM_Q}`;
 
-  const share = `${state.name} -> ${state.score}/${NUM_Q} (seed ${state.seed})`;
+  const share = `${state.name} -> ${fmtScore(state.score)}/${NUM_Q} (seed ${state.seed})`;
   $("shareText").value = share;
+
+  buildReview();
 }
 
 function startGame() {
   const name = $("name").value.trim() || "Jugador";
   const seedTxt = $("seed").value.trim();
 
-  if (!seedTxt) {
-    alert("Pon una seed (o pulsa 'Generar seed aleatoria').");
-    return;
-  }
+  if (!seedTxt) return alert("Pon una seed (o pulsa 'Generar seed aleatoria').");
   const seed = Number(seedTxt);
-  if (!Number.isFinite(seed) || seed <= 0) {
-    alert("La seed debe ser un número positivo (ej: 74219).");
-    return;
-  }
+  if (!Number.isFinite(seed) || seed <= 0) return alert("La seed debe ser un número positivo (ej: 74219).");
 
   state.name = name;
   state.seed = Math.floor(seed);
   state.questions = pickQuestions(state.seed);
   state.idx = 0;
   state.score = 0;
+  state.history = [];
 
+  $("reviewBox").style.display = "none";
   $("result").style.display = "none";
   $("game").style.display = "block";
+
   showQuestion();
 }
 
-function submitAnswer(isSkip=false) {
-  const q = state.questions[state.idx];
-  const correct = q[1];
-  const answers = acceptedAnswers(correct);
+function submitAnswer() {
+  if (state.locked) return;
 
-  if (isSkip) {
-    setFeedback(`❌ Saltada. Válida: ${correct}`, false);
+  const q = state.questions[state.idx];
+  const userRaw = $("answer").value;
+
+  const res = scoreAnswer(userRaw, q[1]);
+  state.score += res.points;
+
+  state.history.push({
+    pais: q[0],
+    capital: q[1],
+    continente: q[2],
+    region: q[3],
+    user: userRaw,
+    points: res.points,
+    type: res.type
+  });
+
+  if (res.points === 1) {
+    setFeedback("✅ Correcto (+1)", "ok");
+  } else if (res.points === 0.5) {
+    setFeedback(`🟡 Casi. Te faltó alguna tilde. (+0,5)\nVálida: ${q[1]}`, "warn");
   } else {
-    const user = norm($("answer").value);
-    const ok = answers.includes(user);
-    if (ok) {
-      state.score++;
-      setFeedback("✅ Correcto", true);
-    } else {
-      setFeedback(`❌ Incorrecto. Válida: ${correct}`, false);
-    }
+    setFeedback(`❌ Incorrecto (+0)\nVálida: ${q[1]}`, "bad");
   }
 
-  // pasar a la siguiente tras un pequeño delay
-  setTimeout(() => {
-    state.idx++;
-    if (state.idx >= NUM_Q) finish();
-    else showQuestion();
-  }, 650);
+  state.locked = true;
+  state.lastWasAnswered = true;
+  $("btnSubmit").disabled = true;
+  $("btnNext").disabled = false;
+  $("btnNext").focus();
 }
 
+function nextQuestion() {
+  if (!state.lastWasAnswered) return;
+  state.idx++;
+  if (state.idx >= NUM_Q) finish();
+  else showQuestion();
+}
+
+/* -----------------------------
+   Eventos
+----------------------------- */
 $("btnStart").addEventListener("click", startGame);
 
 $("btnNewSeed").addEventListener("click", () => {
@@ -341,11 +456,11 @@ $("btnNewSeed").addEventListener("click", () => {
   $("seed").value = String(seed);
 });
 
-$("btnSubmit").addEventListener("click", () => submitAnswer(false));
-$("btnSkip").addEventListener("click", () => submitAnswer(true));
+$("btnSubmit").addEventListener("click", submitAnswer);
+$("btnNext").addEventListener("click", nextQuestion);
 
 $("answer").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") submitAnswer(false);
+  if (e.key === "Enter") submitAnswer();
 });
 
 $("btnCopy").addEventListener("click", async () => {
