@@ -27,25 +27,21 @@
     .footer { margin-top: 14px; font-size: 12px; color:#666; }
     code { background: #f5f5f5; padding: 1px 6px; border-radius: 8px; }
 
-    /* menú */
     .menuGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 760px) { .menuGrid { grid-template-columns: 1fr; } }
     .menuCard { border: 1px solid #e6e6e6; border-radius: 14px; padding: 14px; }
     .menuCard p { margin: 8px 0 0 0; color:#555; font-size: 13px; }
 
-    /* checks */
     .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
     @media (max-width: 760px) { .checks { grid-template-columns: 1fr; } }
     .chk { display:flex; align-items:center; gap:10px; border:1px solid #eee; border-radius: 12px; padding: 10px; }
     .chk input { width: 18px; height: 18px; }
 
-    /* repaso */
     .review { margin-top: 12px; }
     .review ul { margin: 0; padding-left: 18px; }
     .review li { margin: 6px 0; }
 
-    /* marcador global */
-    #globalBox .muted { white-space: pre-line; }
+    .globalBox .muted { white-space: pre-line; }
   </style>
 </head>
 <body>
@@ -76,18 +72,18 @@
       </div>
     </div>
 
-    <!-- SETUP COMPETICIÓN -->
+    <!-- SETUP COMP -->
     <div id="setupComp" class="qbox" style="display:none;">
       <h2>Competición</h2>
 
       <div class="row">
         <div>
           <label>Tu nombre</label>
-          <input id="compName" placeholder="Ej: Pablo" />
+          <input id="compName" placeholder="Ej: Maria" />
         </div>
         <div>
           <label>Rival (siempre el mismo)</label>
-          <input id="compOpponent" placeholder="Ej: Marta" />
+          <input id="compOpponent" placeholder="Ej: Hugo" />
         </div>
         <div>
           <label>Seed (mismo set)</label>
@@ -105,21 +101,22 @@
         Tip: compartid la seed por WhatsApp (ej. <code>seed 74219</code>) y jugáis cada uno.
       </div>
 
-      <div id="globalBox" class="qbox" style="display:none;">
+      <!-- Global en SETUP -->
+      <div id="globalBoxSetup" class="qbox globalBox" style="display:none;">
         <b>Marcador global (puntos + victorias)</b>
-        <div class="muted" id="globalText"></div>
-        <div class="mini" id="globalHint"></div>
+        <div class="muted" id="globalTextSetup"></div>
+        <div class="mini" id="globalHintSetup"></div>
       </div>
     </div>
 
-    <!-- SETUP PRÁCTICA -->
+    <!-- SETUP PRACTICE -->
     <div id="setupPractice" class="qbox" style="display:none;">
       <h2>Práctica / Repaso (sin seed)</h2>
 
       <div class="row">
         <div>
           <label>Tu nombre</label>
-          <input id="pracName" placeholder="Ej: Pablo" />
+          <input id="pracName" placeholder="Ej: Maria" />
         </div>
         <div>
           <label>Nº de preguntas</label>
@@ -177,6 +174,12 @@
     <div id="result" class="qbox" style="display:none;">
       <div id="finalScore" style="font-size:18px; font-weight:1000;"></div>
 
+      <!-- Global en RESULTADO (AQUÍ ES DONDE TE FALTABA) -->
+      <div id="globalBoxResult" class="qbox globalBox" style="display:none;">
+        <b>Marcador global (puntos + victorias)</b>
+        <div class="muted" id="globalTextResult"></div>
+      </div>
+
       <div id="shareBlock" style="display:none;">
         <div class="muted">Texto listo para WhatsApp:</div>
         <textarea id="shareText" readonly></textarea>
@@ -203,18 +206,12 @@
   </div>
 
 <script>
-/* =========================================================
-   CONFIG GLOBAL (YA PUESTO CON TU URL Y TOKEN)
-   ========================================================= */
-const GLOBAL_ENABLED = true;
+/* ===== CONFIG GLOBAL ===== */
 const GLOBAL_URL = "https://script.google.com/macros/s/AKfycbxpZHqVoJswl7sCZmAU2YsWZxRBT2JcFrrSaYYVzQ2lumqNkgTHsFcZHgmaN1P422UeOQ/exec";
 const GLOBAL_TOKEN = "K9f2A-1xPq_2026_SUPERSECRETO_98345";
 
-/* =========================================================
-   DATA
-   ========================================================= */
+/* ===== DATA ===== */
 const DATA = [
-  // Europa
   ["España","Madrid","Europa",""],
   ["Francia","París","Europa",""],
   ["Italia","Roma","Europa",""],
@@ -237,7 +234,6 @@ const DATA = [
   ["Grecia","Atenas","Europa",""],
   ["Ucrania","Kiev | Kyiv","Europa",""],
 
-  // América
   ["Estados Unidos","Washington D. C. | Washington DC | Washington D.C. | Washington","América",""],
   ["Canadá","Ottawa","América",""],
   ["México","Ciudad de México","América",""],
@@ -260,7 +256,6 @@ const DATA = [
   ["Brasil","Brasilia | Brasília","América",""],
   ["Bolivia","Sucre | La Paz","América",""],
 
-  // Asia + Oriente Medio
   ["Japón","Tokio","Asia",""],
   ["China","Pekín | Beijing","Asia",""],
   ["Corea del Sur","Seúl","Asia",""],
@@ -274,6 +269,7 @@ const DATA = [
   ["Filipinas","Manila","Asia",""],
   ["India","Nueva Delhi | Delhi","Asia",""],
   ["Pakistán","Islamabad","Asia",""],
+
   ["Irán","Teherán","Asia","Oriente Medio"],
   ["Irak","Bagdad","Asia","Oriente Medio"],
   ["Arabia Saudí","Riad","Asia","Oriente Medio"],
@@ -289,7 +285,6 @@ const DATA = [
   ["Siria","Damasco","Asia","Oriente Medio"],
   ["Turquía","Ankara","Asia","Oriente Medio"],
 
-  // África
   ["Marruecos","Rabat","África",""],
   ["Argelia","Argel","África",""],
   ["Túnez","Túnez","África",""],
@@ -307,23 +302,17 @@ const DATA = [
   ["Etiopía","Adís Abeba | Addis Abeba","África",""],
   ["Sudáfrica","Pretoria | Ciudad del Cabo | Bloemfontein","África",""],
 
-  // Oceanía
   ["Australia","Canberra","Oceanía",""],
   ["Nueva Zelanda","Wellington","Oceanía",""],
   ["Fiyi","Suva","Oceanía",""],
   ["Papúa Nueva Guinea","Port Moresby","Oceanía",""],
 ];
 
-/* =========================================================
-   Helpers
-   ========================================================= */
+/* ===== Helpers ===== */
 const $ = (id) => document.getElementById(id);
 
 function normBasic(s) {
-  return (s ?? "")
-    .trim()
-    .replace(/\s+/g, " ")
-    .toLocaleLowerCase("es");
+  return (s ?? "").trim().replace(/\s+/g, " ").toLocaleLowerCase("es");
 }
 function stripAccents(s) {
   return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -334,7 +323,6 @@ function acceptedAnswers(capitalStr) {
 function scoreAnswer(userRaw, capitalStr) {
   const user = normBasic(userRaw);
   const accepted = acceptedAnswers(capitalStr);
-
   if (accepted.includes(user)) return { points: 1, type: "full" };
 
   const userNoAcc = stripAccents(user);
@@ -352,9 +340,7 @@ function setFeedback(msg, style) {
   $("feedback").className = "status " + (style || "");
 }
 
-/* =========================================================
-   PRNG seed (competición)
-   ========================================================= */
+/* ===== PRNG ===== */
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function() {
@@ -372,16 +358,13 @@ function shuffleInPlace(arr, rng) {
   }
 }
 
-/* =========================================================
-   Selección preguntas
-   ========================================================= */
+/* ===== Question selection ===== */
 const MUST_HAVE_REGION = "Oriente Medio";
 const COMP_NUM_Q = 10;
 const COMP_QUOTAS = { "Europa":2, "América":2, "Asia":2, "África":2 };
 
 function pickCompetitionQuestions(seed) {
   const rng = mulberry32(seed);
-
   const byCont = {};
   for (const item of DATA) (byCont[item[2]] ||= []).push(item);
 
@@ -390,9 +373,8 @@ function pickCompetitionQuestions(seed) {
 
   function take(pool, k) {
     const avail = pool.filter(x => !used.has(x[0]));
-    if (avail.length < k) throw new Error("No hay suficientes países para cumplir la selección.");
     shuffleInPlace(avail, rng);
-    for (let i=0; i<k; i++) { picked.push(avail[i]); used.add(avail[i][0]); }
+    for (let i=0; i<k && i<avail.length; i++) { picked.push(avail[i]); used.add(avail[i][0]); }
   }
 
   for (const [cont, k] of Object.entries(COMP_QUOTAS)) take(byCont[cont] || [], k);
@@ -435,21 +417,13 @@ function pickPracticeQuestions(n, zones) {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-/* =========================================================
-   Global: JSONP (sin CORS)
-   ========================================================= */
+/* ===== Global JSONP ===== */
 function saveNames(name, opp) {
   localStorage.setItem("cap_name", name);
   localStorage.setItem("cap_opp", opp);
 }
 function loadNames() {
-  return {
-    name: localStorage.getItem("cap_name") || "",
-    opp: localStorage.getItem("cap_opp") || ""
-  };
-}
-function globalConfigured() {
-  return GLOBAL_ENABLED && GLOBAL_URL && GLOBAL_TOKEN;
+  return { name: localStorage.getItem("cap_name") || "", opp: localStorage.getItem("cap_opp") || "" };
 }
 
 function jsonpRequest(url) {
@@ -481,7 +455,6 @@ async function fetchGlobal(player, opponent) {
   u.searchParams.set("token", GLOBAL_TOKEN);
   u.searchParams.set("player", player);
   u.searchParams.set("opponent", opponent);
-
   const j = await jsonpRequest(u.toString());
   if (!j.ok) throw new Error(j.error || "No se pudo leer global");
   return j.global;
@@ -495,7 +468,6 @@ async function postResult(player, opponent, seed, score) {
   u.searchParams.set("opponent", opponent);
   u.searchParams.set("seed", String(seed));
   u.searchParams.set("score", String(score));
-
   const j = await jsonpRequest(u.toString());
   if (!j.ok) throw new Error(j.error || "No se pudo guardar resultado");
   return j.global;
@@ -508,14 +480,17 @@ function renderGlobal(g) {
     `Victorias: ${p1} ${g.wins[p1]} — ${p2} ${g.wins[p2]}\n` +
     `Puntos totales: ${p1} ${fmtScore(g.points[p1])} — ${p2} ${fmtScore(g.points[p2])}`;
 
-  $("globalBox").style.display = "block";
-  $("globalText").textContent = txt;
-  $("globalHint").textContent = "Se actualiza al terminar cada partida (si ambos jugáis la misma seed).";
+  // Mostrar en SETUP
+  $("globalBoxSetup").style.display = "block";
+  $("globalTextSetup").textContent = txt;
+  $("globalHintSetup").textContent = "Se actualiza al terminar cada partida (si ambos jugáis la misma seed).";
+
+  // Mostrar en RESULTADO
+  $("globalBoxResult").style.display = "block";
+  $("globalTextResult").textContent = txt;
 }
 
-/* =========================================================
-   UI + Estado
-   ========================================================= */
+/* ===== UI ===== */
 function resetViews() {
   $("menu").style.display = "none";
   $("setupComp").style.display = "none";
@@ -530,18 +505,10 @@ function showMenu() {
 }
 
 let state = {
-  mode: null,
-  seed: null,
-  name: "",
-  opponent: "",
-  questions: [],
-  idx: 0,
-  score: 0,
-  locked: false,
-  lastWasAnswered: false,
-  history: [],
-  totalQ: 0,
-  restartFn: null
+  mode: null, seed: null, name: "", opponent: "",
+  questions: [], idx: 0, score: 0,
+  locked: false, lastWasAnswered: false,
+  history: [], totalQ: 0, restartFn: null
 };
 
 function startGameCommon({ mode, name, opponent, questions, seed, restartFn }) {
@@ -596,12 +563,7 @@ function submitAnswer() {
   const res = scoreAnswer(userRaw, q[1]);
   state.score += res.points;
 
-  state.history.push({
-    pais: q[0],
-    capital: q[1],
-    user: userRaw,
-    points: res.points
-  });
+  state.history.push({ pais: q[0], capital: q[1], user: userRaw, points: res.points });
 
   if (res.points === 1) setFeedback("✅ Correcto (+1)", "ok");
   else if (res.points === 0.5) setFeedback(`🟡 Casi. Te faltó alguna tilde. (+0,5)\nVálida: ${q[1]}`, "warn");
@@ -611,7 +573,6 @@ function submitAnswer() {
   state.lastWasAnswered = true;
   $("btnSubmit").disabled = true;
   $("btnNext").disabled = false;
-  $("btnNext").focus();
 }
 
 function nextQuestion() {
@@ -646,16 +607,17 @@ async function finish() {
 
   $("finalScore").textContent = `${state.name} → ${fmtScore(state.score)}/${state.totalQ}`;
 
+  // limpiar marcador en result hasta tener uno nuevo
+  $("globalBoxResult").style.display = "none";
+
   if (state.mode === "competition") {
     $("shareBlock").style.display = "block";
     $("shareText").value = `${state.name} -> ${fmtScore(state.score)}/${state.totalQ} (seed ${state.seed})`;
     $("btnRestartSame").style.display = "inline-block";
 
-    // actualizar global
     try {
       const g = await postResult(state.name, state.opponent, state.seed, state.score);
-      // mostramos el global en la pantalla actual reutilizando el bloque (está en setupComp, pero da igual)
-      renderGlobal(g);
+      renderGlobal(g); // ahora lo pinta en RESULTADO también ✅
     } catch (e) {
       console.log("Global error:", e);
     }
@@ -666,26 +628,24 @@ async function finish() {
   buildReview();
 }
 
-/* =========================================================
-   Eventos
-   ========================================================= */
+/* ===== Events ===== */
 $("goComp").addEventListener("click", async () => {
   resetViews();
   $("setupComp").style.display = "block";
+
+  // ocultar global setup hasta que podamos calcularlo
+  $("globalBoxSetup").style.display = "none";
 
   const saved = loadNames();
   $("compName").value = saved.name;
   $("compOpponent").value = saved.opp;
 
-  $("globalBox").style.display = "none";
-
+  // Si ya hay nombres guardados, lo mostramos al entrar
   if (saved.name && saved.opp) {
     try {
       const g = await fetchGlobal(saved.name, saved.opp);
       renderGlobal(g);
-    } catch (e) {
-      $("globalBox").style.display = "none";
-    }
+    } catch (e) {}
   }
 });
 
@@ -716,11 +676,11 @@ $("btnCompStart").addEventListener("click", async () => {
 
   saveNames(name, opponent);
 
-  // leer global antes de jugar (si existe)
+  // mostrar global ya al darle start (aunque solo haya jugado uno)
   try {
     const g = await fetchGlobal(name, opponent);
     renderGlobal(g);
-  } catch (e) {}
+  } catch(e) {}
 
   const s = Math.floor(seed);
   const questions = pickCompetitionQuestions(s);
