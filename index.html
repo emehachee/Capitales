@@ -6,7 +6,7 @@
   <title>Capitales del Mundo</title>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 18px; line-height: 1.35; }
-    .card { max-width: 980px; margin: 0 auto; padding: 16px; border: 1px solid #ddd; border-radius: 14px; }
+    .card { max-width: 1020px; margin: 0 auto; padding: 16px; border: 1px solid #ddd; border-radius: 14px; }
     h1 { margin: 0 0 10px 0; font-size: 20px; }
     h2 { margin: 0 0 10px 0; font-size: 16px; }
     .row { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -17,7 +17,7 @@
     button:disabled { opacity: 0.5; cursor: not-allowed; }
     .muted { color:#666; font-size: 13px; margin-top: 8px; }
     .qbox { margin-top: 14px; padding: 12px; border: 1px solid #eee; border-radius: 12px; }
-    .status { margin-top: 10px; font-weight: 800; white-space: pre-line; }
+    .status { margin-top: 10px; font-weight: 900; white-space: pre-line; }
     .ok { color: #0a7a29; }
     .warn { color: #b36b00; }
     .bad { color: #b00020; }
@@ -25,25 +25,27 @@
     textarea { margin-top: 10px; height: 90px; }
     .mini { font-size: 12px; color:#666; margin-top: 6px; }
     .footer { margin-top: 14px; font-size: 12px; color:#666; }
+    code { background: #f5f5f5; padding: 1px 6px; border-radius: 8px; }
 
     /* menú */
     .menuGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 760px) { .menuGrid { grid-template-columns: 1fr; } }
     .menuCard { border: 1px solid #e6e6e6; border-radius: 14px; padding: 14px; }
     .menuCard p { margin: 8px 0 0 0; color:#555; font-size: 13px; }
-    .tiny { font-size: 12px; color:#666; margin-top: 6px; }
 
     /* checks */
     .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
     @media (max-width: 760px) { .checks { grid-template-columns: 1fr; } }
     .chk { display:flex; align-items:center; gap:10px; border:1px solid #eee; border-radius: 12px; padding: 10px; }
     .chk input { width: 18px; height: 18px; }
-    code { background: #f5f5f5; padding: 1px 6px; border-radius: 8px; }
 
-    /* repaso final */
+    /* repaso */
     .review { margin-top: 12px; }
     .review ul { margin: 0; padding-left: 18px; }
     .review li { margin: 6px 0; }
+
+    /* marcador global */
+    #globalBox .muted { white-space: pre-line; }
   </style>
 </head>
 <body>
@@ -59,14 +61,14 @@
       <div class="menuGrid">
         <div class="menuCard">
           <b>Modo Competición (con seed)</b>
-          <p>Mismo set para los dos jugadores (justo). Incluye cuotas por continentes y al menos 1 de Oriente Medio.</p>
+          <p>Justo para dos jugadores. Mismo set por seed. Incluye Oriente Medio. Puede guardar un global (puntos + victorias).</p>
           <div class="row" style="margin-top:10px;">
             <button id="goComp">Entrar a Competición</button>
           </div>
         </div>
         <div class="menuCard">
-          <b>Modo Práctica/Repaso (sin seed)</b>
-          <p>Practica por zonas (África, Europa, Asia, América, Oceanía y/o Oriente Medio). Preguntas aleatorias solo de lo que elijas.</p>
+          <b>Modo Práctica / Repaso (sin seed)</b>
+          <p>Eliges zonas (África/Europa/Asia/América/Oceanía y/o Oriente Medio) y practicas solo eso.</p>
           <div class="row" style="margin-top:10px;">
             <button id="goPractice">Entrar a Práctica</button>
           </div>
@@ -77,27 +79,43 @@
     <!-- SETUP COMPETICIÓN -->
     <div id="setupComp" class="qbox" style="display:none;">
       <h2>Competición</h2>
+
       <div class="row">
         <div>
           <label>Tu nombre</label>
           <input id="compName" placeholder="Ej: Pablo" />
         </div>
         <div>
+          <label>Rival (siempre el mismo)</label>
+          <input id="compOpponent" placeholder="Ej: Marta" />
+        </div>
+        <div>
           <label>Seed (mismo set)</label>
           <input id="compSeed" placeholder="Ej: 74219" inputmode="numeric" />
         </div>
       </div>
+
       <div class="row" style="margin-top:10px;">
         <button id="btnCompStart">Empezar Competición</button>
         <button id="btnCompSeed">Generar seed</button>
         <button id="btnBack1">Volver al menú</button>
       </div>
-      <div class="tiny">Tip: compartid la seed por WhatsApp. Ej: <code>seed 74219</code></div>
+
+      <div class="muted" style="margin-top:8px;">
+        Tip: compartid la seed por WhatsApp (ej. <code>seed 74219</code>) y jugáis cada uno.
+      </div>
+
+      <div id="globalBox" class="qbox" style="display:none;">
+        <b>Marcador global (puntos + victorias)</b>
+        <div class="muted" id="globalText"></div>
+        <div class="mini" id="globalHint"></div>
+      </div>
     </div>
 
     <!-- SETUP PRÁCTICA -->
     <div id="setupPractice" class="qbox" style="display:none;">
       <h2>Práctica / Repaso (sin seed)</h2>
+
       <div class="row">
         <div>
           <label>Tu nombre</label>
@@ -127,7 +145,10 @@
         <button id="btnPracticeStart">Empezar Práctica</button>
         <button id="btnBack2">Volver al menú</button>
       </div>
-      <div class="tiny">En práctica no hay seed: cada vez sale distinto, pero solo de las zonas elegidas.</div>
+
+      <div class="muted" style="margin-top:8px;">
+        En práctica no hay seed: cada vez sale distinto, pero solo de las zonas elegidas.
+      </div>
     </div>
 
     <!-- GAME -->
@@ -154,7 +175,7 @@
 
     <!-- RESULT -->
     <div id="result" class="qbox" style="display:none;">
-      <div id="finalScore" style="font-size:18px; font-weight:900;"></div>
+      <div id="finalScore" style="font-size:18px; font-weight:1000;"></div>
 
       <div id="shareBlock" style="display:none;">
         <div class="muted">Texto listo para WhatsApp:</div>
@@ -174,17 +195,29 @@
       <div class="row" style="margin-top:10px;">
         <button id="btnResultMenu">Volver al menú</button>
       </div>
-    </div>
 
-    <div class="footer">
-      Competición = seed + WhatsApp · Práctica = sin seed + zonas
+      <div class="footer">
+        Competición = seed + WhatsApp (+ global opcional) · Práctica = sin seed + zonas
+      </div>
     </div>
   </div>
 
 <script>
-/* =============================
-   DATA: país, capital(es), continente, región
-============================= */
+/* =========================================================
+   0) CONFIG GLOBAL (Google Sheets + Apps Script)
+   ---------------------------------------------------------
+   - Si NO quieres global, deja GLOBAL_ENABLED=false.
+   - Si quieres global:
+     - GLOBAL_URL = URL del Web App (Apps Script Deploy)
+     - GLOBAL_TOKEN = el token que pusiste en Apps Script
+   ========================================================= */
+const GLOBAL_ENABLED = true;  // <-- ponlo en false si quieres desactivar global
+const GLOBAL_URL = "https://script.google.com/macros/s/AKfycbxpZHqVoJswl7sCZmAU2YsWZxRBT2JcFrrSaYYVzQ2lumqNkgTHsFcZHgmaN1P422UeOQ/exec";     // ej: https://script.google.com/macros/s/AKfycbxxxx/exec
+const GLOBAL_TOKEN = "K9f2A-1xPq_2026_SUPERSECRETO_98345";            // ej: K9f2A-...-98345
+
+/* =========================================================
+   1) DATA: país, capital(es), continente, región
+   ========================================================= */
 const DATA = [
   // Europa
   ["España","Madrid","Europa",""],
@@ -286,27 +319,10 @@ const DATA = [
   ["Papúa Nueva Guinea","Port Moresby","Oceanía",""],
 ];
 
-/* =============================
-   Helpers
-============================= */
+/* =========================================================
+   2) Helpers
+   ========================================================= */
 const $ = (id) => document.getElementById(id);
-
-function mulberry32(seed) {
-  let a = seed >>> 0;
-  return function() {
-    a |= 0; a = (a + 0x6D2B79F5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-function randInt(rng, max) { return Math.floor(rng() * max); }
-function shuffleInPlace(arr, rng) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = randInt(rng, i + 1);
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-}
 
 function normBasic(s) {
   return (s ?? "")
@@ -336,20 +352,40 @@ function fmtScore(x) {
   const s = (Math.round(x * 2) / 2).toString();
   return s.replace(".", ",");
 }
-
 function setFeedback(msg, style) {
   $("feedback").textContent = msg;
   $("feedback").className = "status " + (style || "");
 }
 
-/* =============================
-   Selection logic
-============================= */
-const COMP_NUM_Q = 10;
-const COMP_QUOTAS = { "Europa":2, "América":2, "Asia":2, "África":2 };
+/* =========================================================
+   3) PRNG para competición con seed
+   ========================================================= */
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function() {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function randInt(rng, max) { return Math.floor(rng() * max); }
+function shuffleInPlace(arr, rng) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = randInt(rng, i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+/* =========================================================
+   4) Selección de preguntas
+   ========================================================= */
 const MUST_HAVE_REGION = "Oriente Medio";
 
-// competición: cuotas + 2 libres + garantía Oriente Medio
+// Competición: 10 preguntas, cuotas 2/2/2/2 + 2 libres, garantía 1 OM
+const COMP_NUM_Q = 10;
+const COMP_QUOTAS = { "Europa":2, "América":2, "Asia":2, "África":2 };
+
 function pickCompetitionQuestions(seed) {
   const rng = mulberry32(seed);
 
@@ -382,29 +418,24 @@ function pickCompetitionQuestions(seed) {
   return picked;
 }
 
-// práctica: filtrar por zonas + sample aleatorio sin seed
+// Práctica: filtra por zonas y saca N aleatorias (sin seed)
 function pickPracticeQuestions(n, zones) {
-  // zones: {continents:Set, includeME:boolean}
   const continents = zones.continents;
   const includeME = zones.includeME;
 
   let pool = DATA.filter(x => continents.has(x[2]));
+
   if (includeME) {
-    // añade Oriente Medio aunque el continente Asia no esté marcado
     const me = DATA.filter(x => x[3] === MUST_HAVE_REGION);
     const keys = new Set(pool.map(p => p[0]));
     for (const item of me) if (!keys.has(item[0])) pool.push(item);
   } else {
-    // si NO includeME, quitamos los ME del pool (para poder practicar Asia sin ME si quieren)
     pool = pool.filter(x => x[3] !== MUST_HAVE_REGION);
   }
 
-  // seguridad: si el usuario no marca nada
   if (pool.length === 0) throw new Error("No hay países con esos filtros. Marca alguna zona.");
 
-  // sample sin reemplazo
   const copy = pool.slice();
-  // shuffle con Math.random (sin seed)
   for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [copy[i], copy[j]] = [copy[j], copy[i]];
@@ -412,23 +443,72 @@ function pickPracticeQuestions(n, zones) {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-/* =============================
-   Game state
-============================= */
-let state = {
-  mode: null,              // "competition" | "practice"
-  seed: null,              // solo competición
-  name: "",
-  questions: [],
-  idx: 0,
-  score: 0,
-  locked: false,
-  lastWasAnswered: false,
-  history: [],             // para repaso
-  totalQ: 0,
-  restartFn: null          // función para "jugar otra vez"
-};
+/* =========================================================
+   5) Global scoreboard (Google Sheets Web App)
+   ========================================================= */
+function saveNames(name, opp) {
+  localStorage.setItem("cap_name", name);
+  localStorage.setItem("cap_opp", opp);
+}
+function loadNames() {
+  return {
+    name: localStorage.getItem("cap_name") || "",
+    opp: localStorage.getItem("cap_opp") || ""
+  };
+}
+function globalConfigured() {
+  return GLOBAL_ENABLED && GLOBAL_URL && !GLOBAL_URL.includes("PEGA_AQUI") && GLOBAL_TOKEN && !GLOBAL_TOKEN.includes("PEGA_AQUI");
+}
 
+async function fetchGlobal(player, opponent) {
+  if (!globalConfigured()) throw new Error("Global no configurado");
+  const url = new URL(GLOBAL_URL);
+  url.searchParams.set("token", GLOBAL_TOKEN);
+  url.searchParams.set("player", player);
+  url.searchParams.set("opponent", opponent);
+  const r = await fetch(url.toString(), { method:"GET" });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || "No se pudo leer global");
+  return j.global;
+}
+
+async function postResult(player, opponent, seed, score) {
+  if (!globalConfigured()) throw new Error("Global no configurado");
+  const r = await fetch(GLOBAL_URL, {
+    method:"POST",
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify({
+      token: GLOBAL_TOKEN,
+      player,
+      opponent,
+      seed: String(seed),
+      score
+    })
+  });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || "No se pudo guardar resultado");
+  return j.global;
+}
+
+function renderGlobal(g) {
+  const p1 = g.p1, p2 = g.p2;
+  const txt =
+    `Partidas comparables: ${g.matches} (empates: ${g.draws})\n` +
+    `Victorias: ${p1} ${g.wins[p1]} — ${p2} ${g.wins[p2]}\n` +
+    `Puntos totales: ${p1} ${fmtScore(g.points[p1])} — ${p2} ${fmtScore(g.points[p2])}`;
+  $("globalBox").style.display = "block";
+  $("globalText").textContent = txt;
+
+  if (!globalConfigured()) {
+    $("globalHint").textContent = "Para activar el global: rellena GLOBAL_URL y GLOBAL_TOKEN dentro del index.html";
+  } else {
+    $("globalHint").textContent = "Se actualiza al terminar cada partida (si ambos jugáis la misma seed).";
+  }
+}
+
+/* =========================================================
+   6) UI + Estado del juego
+   ========================================================= */
 function resetViews() {
   $("menu").style.display = "none";
   $("setupComp").style.display = "none";
@@ -442,18 +522,34 @@ function showMenu() {
   $("menu").style.display = "block";
 }
 
-function startGameCommon({ mode, name, questions, seed=null, restartFn }) {
+let state = {
+  mode: null,         // "competition" | "practice"
+  seed: null,         // solo competición
+  name: "",
+  opponent: "",
+  questions: [],
+  idx: 0,
+  score: 0,
+  locked: false,
+  lastWasAnswered: false,
+  history: [],
+  totalQ: 0,
+  restartFn: null
+};
+
+function startGameCommon({ mode, name, opponent, questions, seed, restartFn }) {
   state.mode = mode;
   state.name = name || "Jugador";
+  state.opponent = opponent || "";
   state.questions = questions;
-  state.seed = seed;
+  state.seed = seed ?? null;
   state.idx = 0;
   state.score = 0;
   state.locked = false;
   state.lastWasAnswered = false;
   state.history = [];
   state.totalQ = questions.length;
-  state.restartFn = restartFn;
+  state.restartFn = restartFn || null;
 
   resetViews();
   $("game").style.display = "block";
@@ -539,17 +635,30 @@ function buildReview() {
   }
 }
 
-function finish() {
+async function finish() {
   resetViews();
   $("result").style.display = "block";
 
   $("finalScore").textContent = `${state.name} → ${fmtScore(state.score)}/${state.totalQ}`;
 
-  // Competición: mostrar bloque WhatsApp + botón repetir misma seed
+  // WhatsApp solo en competición
   if (state.mode === "competition") {
     $("shareBlock").style.display = "block";
     $("shareText").value = `${state.name} -> ${fmtScore(state.score)}/${state.totalQ} (seed ${state.seed})`;
     $("btnRestartSame").style.display = "inline-block";
+
+    // actualizar global automáticamente
+    if (globalConfigured()) {
+      try {
+        const g = await postResult(state.name, state.opponent, state.seed, state.score);
+        // Mostrar también el global en pantalla (reutilizamos el bloque del setup)
+        $("globalBox").style.display = "block";
+        renderGlobal(g);
+      } catch (e) {
+        // no rompemos el juego
+        console.log("Global error:", e);
+      }
+    }
   } else {
     $("shareBlock").style.display = "none";
   }
@@ -557,12 +666,37 @@ function finish() {
   buildReview();
 }
 
-/* =============================
-   Menu actions
-============================= */
-$("goComp").addEventListener("click", () => {
+/* =========================================================
+   7) Eventos UI
+   ========================================================= */
+
+// Menú
+$("goComp").addEventListener("click", async () => {
   resetViews();
   $("setupComp").style.display = "block";
+
+  // autocompletar nombres guardados
+  const saved = loadNames();
+  $("compName").value = saved.name;
+  $("compOpponent").value = saved.opp;
+
+  // mostrar global si ya hay nombres (y está configurado)
+  $("globalBox").style.display = "none";
+  if (globalConfigured() && saved.name && saved.opp) {
+    try {
+      const g = await fetchGlobal(saved.name, saved.opp);
+      renderGlobal(g);
+    } catch (e) {
+      $("globalBox").style.display = "none";
+    }
+  } else if (GLOBAL_ENABLED) {
+    // Si está activado pero sin configurar aún, lo avisamos con un hint
+    if (!globalConfigured()) {
+      $("globalBox").style.display = "block";
+      $("globalText").textContent = "Global desactivado: falta configurar GLOBAL_URL y GLOBAL_TOKEN dentro del index.html.";
+      $("globalHint").textContent = "";
+    }
+  }
 });
 
 $("goPractice").addEventListener("click", () => {
@@ -575,37 +709,49 @@ $("btnBack2").addEventListener("click", showMenu);
 $("btnExit").addEventListener("click", showMenu);
 $("btnResultMenu").addEventListener("click", showMenu);
 
-/* =============================
-   Competition start
-============================= */
+// Competición
 $("btnCompSeed").addEventListener("click", () => {
   const seed = Math.floor(Date.now() % 1000000000);
   $("compSeed").value = String(seed);
 });
 
-$("btnCompStart").addEventListener("click", () => {
+$("btnCompStart").addEventListener("click", async () => {
   const name = $("compName").value.trim() || "Jugador";
+  const opponent = $("compOpponent").value.trim();
   const seedTxt = $("compSeed").value.trim();
+
+  if (!opponent) return alert("Pon el nombre de tu rival (siempre el mismo).");
   if (!seedTxt) return alert("Pon una seed (o pulsa Generar seed).");
   const seed = Number(seedTxt);
   if (!Number.isFinite(seed) || seed <= 0) return alert("La seed debe ser un número positivo (ej: 74219).");
 
-  const questions = pickCompetitionQuestions(Math.floor(seed));
+  saveNames(name, opponent);
+
+  // refrescar global en setup (opcional)
+  if (globalConfigured()) {
+    try {
+      const g = await fetchGlobal(name, opponent);
+      renderGlobal(g);
+    } catch (e) {}
+  }
+
+  const s = Math.floor(seed);
+  const questions = pickCompetitionQuestions(s);
+
   startGameCommon({
     mode: "competition",
     name,
+    opponent,
     questions,
-    seed: Math.floor(seed),
+    seed: s,
     restartFn: () => {
-      const q2 = pickCompetitionQuestions(Math.floor(seed));
-      startGameCommon({ mode:"competition", name, questions:q2, seed:Math.floor(seed), restartFn: state.restartFn });
+      const q2 = pickCompetitionQuestions(s);
+      startGameCommon({ mode:"competition", name, opponent, questions:q2, seed:s, restartFn: state.restartFn });
     }
   });
 });
 
-/* =============================
-   Practice start
-============================= */
+// Práctica
 $("btnPracticeStart").addEventListener("click", () => {
   const name = $("pracName").value.trim() || "Jugador";
   const n = Number($("pracN").value) || 10;
@@ -616,7 +762,6 @@ $("btnPracticeStart").addEventListener("click", () => {
   if ($("zAsia").checked) continents.add("Asia");
   if ($("zAfrica").checked) continents.add("África");
   if ($("zOceania").checked) continents.add("Oceanía");
-
   const includeME = $("zME").checked;
 
   try {
@@ -624,21 +769,27 @@ $("btnPracticeStart").addEventListener("click", () => {
     startGameCommon({
       mode: "practice",
       name,
+      opponent: "",
       questions,
       seed: null,
       restartFn: () => {
         const q2 = pickPracticeQuestions(n, { continents, includeME });
-        startGameCommon({ mode:"practice", name, questions:q2, seed:null, restartFn: state.restartFn });
+        startGameCommon({ mode:"practice", name, opponent:"", questions:q2, seed:null, restartFn: state.restartFn });
       }
     });
   } catch (e) {
-    alert(e.message || "Error creando práctica. Prueba a marcar más zonas.");
+    alert(e.message || "Error en práctica. Marca alguna zona.");
   }
 });
 
-/* =============================
-   Result buttons
-============================= */
+// En juego
+$("btnSubmit").addEventListener("click", submitAnswer);
+$("btnNext").addEventListener("click", nextQuestion);
+$("answer").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") submitAnswer();
+});
+
+// Resultado
 $("btnRestartSame").addEventListener("click", () => {
   if (typeof state.restartFn === "function") state.restartFn();
 });
@@ -654,16 +805,7 @@ $("btnCopy").addEventListener("click", async () => {
   }
 });
 
-/* =============================
-   In-game buttons
-============================= */
-$("btnSubmit").addEventListener("click", submitAnswer);
-$("btnNext").addEventListener("click", nextQuestion);
-$("answer").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") submitAnswer();
-});
-
-/* Start on menu */
+// Start
 showMenu();
 </script>
 </body>
