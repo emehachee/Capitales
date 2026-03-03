@@ -1,4 +1,3 @@
-```html
 <!doctype html>
 <html lang="es">
 <head>
@@ -128,6 +127,7 @@
             <option value="10" selected>10</option>
             <option value="15">15</option>
             <option value="20">20</option>
+            <option value="all">Todos (en esta categoría)</option>
           </select>
         </div>
       </div>
@@ -515,7 +515,9 @@ function pickPracticeQuestions(n, zones, tandaMode) {
     const j = Math.floor(Math.random() * (i + 1));
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
-  return copy.slice(0, Math.min(n, copy.length));
+
+  const limit = Number.isFinite(n) ? n : copy.length; // Infinity => todos
+  return copy.slice(0, Math.min(limit, copy.length));
 }
 
 /* ===== Global JSONP ===== */
@@ -796,7 +798,9 @@ $("btnCompStart").addEventListener("click", async () => {
 
 $("btnPracticeStart").addEventListener("click", () => {
   const name = $("pracName").value.trim() || "Jugador";
-  const n = Number($("pracN").value) || 10;
+
+  const nRaw = $("pracN").value;
+  const n = (nRaw === "all") ? Infinity : (Number(nRaw) || 10);
 
   const tandaMode = $("pracTanda").value;
 
@@ -851,4 +855,3 @@ showMenu();
 </script>
 </body>
 </html>
-```
