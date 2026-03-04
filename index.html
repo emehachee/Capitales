@@ -1,857 +1,342 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Capitales del Mundo</title>
-  <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 18px; line-height: 1.35; }
-    .card { max-width: 1020px; margin: 0 auto; padding: 16px; border: 1px solid #ddd; border-radius: 14px; }
-    h1 { margin: 0 0 10px 0; font-size: 20px; }
-    h2 { margin: 0 0 10px 0; font-size: 16px; }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .row > * { flex: 1; min-width: 180px; }
-    label { display:block; font-size: 13px; margin-bottom: 6px; color: #333; }
-    input, button, textarea, select { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; }
-    button { cursor: pointer; border: 1px solid #bbb; background: #f6f6f6; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .muted { color:#666; font-size: 13px; margin-top: 8px; }
-    .qbox { margin-top: 14px; padding: 12px; border: 1px solid #eee; border-radius: 12px; }
-    .status { margin-top: 10px; font-weight: 900; white-space: pre-line; }
-    .ok { color: #0a7a29; }
-    .warn { color: #b36b00; }
-    .bad { color: #b00020; }
-    .pill { display:inline-block; padding: 3px 8px; border: 1px solid #ddd; border-radius: 999px; font-size: 12px; color:#444; margin-left: 8px; }
-    textarea { margin-top: 10px; height: 90px; }
-    .mini { font-size: 12px; color:#666; margin-top: 6px; }
-    .footer { margin-top: 14px; font-size: 12px; color:#666; }
-    code { background: #f5f5f5; padding: 1px 6px; border-radius: 8px; }
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Capitales del Mundo</title>
 
-    .menuGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 760px) { .menuGrid { grid-template-columns: 1fr; } }
-    .menuCard { border: 1px solid #e6e6e6; border-radius: 14px; padding: 14px; }
-    .menuCard p { margin: 8px 0 0 0; color:#555; font-size: 13px; }
-
-    .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-    @media (max-width: 760px) { .checks { grid-template-columns: 1fr; } }
-    .chk { display:flex; align-items:center; gap:10px; border:1px solid #eee; border-radius: 12px; padding: 10px; }
-    .chk input { width: 18px; height: 18px; }
-
-    .review { margin-top: 12px; }
-    .review ul { margin: 0; padding-left: 18px; }
-    .review li { margin: 6px 0; }
-
-    .globalBox .muted { white-space: pre-line; }
-
-    .tandaRow { display:flex; gap:10px; flex-wrap: wrap; margin-top: 10px; }
-    .tandaRow > * { flex: 1; min-width: 220px; }
-  </style>
+<style>
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:18px;line-height:1.35}
+.card{max-width:900px;margin:auto;padding:16px;border:1px solid #ddd;border-radius:14px}
+h1{margin:0 0 10px 0;font-size:20px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1;min-width:160px}
+button,input,select{padding:10px;border-radius:10px;border:1px solid #ccc;font-size:16px;width:100%}
+button{cursor:pointer;background:#f6f6f6}
+.qbox{margin-top:14px;padding:12px;border:1px solid #eee;border-radius:12px}
+.status{margin-top:10px;font-weight:700}
+.ok{color:#0a7a29}
+.bad{color:#b00020}
+</style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>Capitales del Mundo 🌍</h1>
-    <div class="muted">
-      ✅ Mayúsculas/minúsculas NO importan · 🟡 tildes mal = 0,5 · ❌ mal escrita = 0
-    </div>
 
-    <!-- MENÚ -->
-    <div id="menu" class="qbox">
-      <h2>Elige modo</h2>
-      <div class="menuGrid">
-        <div class="menuCard">
-          <b>Modo Competición (con seed)</b>
-          <p>20 preguntas: incluye siempre 2 de Oceanía. Incluye Oriente Medio. Guarda y muestra un global (puntos + victorias).</p>
-          <div class="row" style="margin-top:10px;">
-            <button id="goComp">Entrar a Competición</button>
-          </div>
-        </div>
-        <div class="menuCard">
-          <b>Modo Práctica / Repaso (sin seed)</b>
-          <p>Eliges zonas y, además, puedes practicar solo la tanda 1, solo la tanda 2 o ambas.</p>
-          <div class="row" style="margin-top:10px;">
-            <button id="goPractice">Entrar a Práctica</button>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="card">
 
-    <!-- SETUP COMP -->
-    <div id="setupComp" class="qbox" style="display:none;">
-      <h2>Competición</h2>
+<h1>Capitales del Mundo 🌍</h1>
 
-      <div class="row">
-        <div>
-          <label>Tu nombre</label>
-          <input id="compName" />
-        </div>
-        <div>
-          <label>Rival (siempre el mismo)</label>
-          <input id="compOpponent" />
-        </div>
-        <div>
-          <label>Seed (mismo set)</label>
-          <input id="compSeed" placeholder="Ej: 74219" inputmode="numeric" />
-        </div>
-      </div>
+<!-- MENU -->
+<div id="menu" class="qbox">
 
-      <div class="row" style="margin-top:10px;">
-        <button id="btnCompStart">Empezar Competición</button>
-        <button id="btnCompSeed">Generar seed</button>
-        <button id="btnBack1">Volver al menú</button>
-      </div>
+<div class="row">
+<button id="goComp">Modo Competición</button>
+<button id="goPractice">Modo Práctica</button>
+</div>
 
-      <div class="muted" style="margin-top:8px;">
-        Tip: compartid la seed por WhatsApp (ej. <code>seed 74219</code>) y jugáis cada uno.
-      </div>
+</div>
 
-      <!-- Global en SETUP -->
-      <div id="globalBoxSetup" class="qbox globalBox" style="display:none;">
-        <b>Marcador global (puntos + victorias)</b>
-        <div class="muted" id="globalTextSetup"></div>
-        <div class="mini" id="globalHintSetup"></div>
-      </div>
-    </div>
 
-    <!-- SETUP PRACTICE -->
-    <div id="setupPractice" class="qbox" style="display:none;">
-      <h2>Práctica / Repaso (sin seed)</h2>
+<!-- COMP -->
+<div id="setupComp" class="qbox" style="display:none">
 
-      <div class="row">
-        <div>
-          <label>Tu nombre</label>
-          <input id="pracName" />
-        </div>
-        <div>
-          <label>Nº de preguntas</label>
-          <select id="pracN">
-            <option value="10" selected>10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
-            <option value="all">Todos (en esta categoría)</option>
-          </select>
-        </div>
-      </div>
+<label>Tu nombre</label>
+<input id="compName">
 
-      <div class="tandaRow">
-        <div>
-          <label>Tanda de práctica</label>
-          <select id="pracTanda">
-            <option value="both" selected>Ambas (tanda 1 + tanda 2)</option>
-            <option value="1">Solo tanda 1 (las antiguas)</option>
-            <option value="2">Solo tanda 2 (las nuevas)</option>
-          </select>
-          <div class="mini">Competición siempre usa ambas tandas.</div>
-        </div>
-      </div>
+<div class="row">
+<button id="btnCompStart">Empezar</button>
+<button id="btnBack1">Volver</button>
+</div>
 
-      <div class="muted" style="margin-top:10px;">Elige zonas (puedes marcar varias):</div>
-      <div class="checks">
-        <div class="chk"><input id="zEuropa" type="checkbox" checked><div>Europa</div></div>
-        <div class="chk"><input id="zAmerica" type="checkbox" checked><div>América</div></div>
-        <div class="chk"><input id="zAsia" type="checkbox" checked><div>Asia</div></div>
-        <div class="chk"><input id="zAfrica" type="checkbox" checked><div>África</div></div>
-        <div class="chk"><input id="zOceania" type="checkbox"><div>Oceanía</div></div>
-        <div class="chk"><input id="zME" type="checkbox" checked><div>Oriente Medio</div></div>
-      </div>
+</div>
 
-      <div class="row" style="margin-top:10px;">
-        <button id="btnPracticeStart">Empezar Práctica</button>
-        <button id="btnBack2">Volver al menú</button>
-      </div>
 
-      <div class="muted" style="margin-top:8px;">
-        En práctica no hay seed: cada vez sale distinto, pero solo de las zonas + tanda elegidas.
-      </div>
-    </div>
+<!-- PRACTICE -->
+<div id="setupPractice" class="qbox" style="display:none">
 
-    <!-- GAME -->
-    <div id="game" class="qbox" style="display:none;">
-      <div id="qHeader"></div>
+<label>Tu nombre</label>
+<input id="pracName">
 
-      <div style="margin-top:10px;">
-        <label id="qLabel">Capital de …</label>
-        <input id="answer" placeholder="Escribe la capital" autocomplete="off" />
-        <div class="mini" id="hint"></div>
-      </div>
+<label>Nº preguntas</label>
+<select id="pracN">
+<option value="10">10</option>
+<option value="15">15</option>
+<option value="20">20</option>
+<option value="all">Todos</option>
+</select>
 
-      <div class="row" style="margin-top:10px;">
-        <button id="btnSubmit">Responder</button>
-        <button id="btnNext" disabled>Siguiente</button>
-      </div>
+<label>Tipo de pregunta</label>
+<select id="pracMode">
+<option value="cap">País → Capital</option>
+<option value="country">Capital → País</option>
+<option value="mix">Mixto</option>
+</select>
 
-      <div id="feedback" class="status"></div>
+<div class="row">
+<button id="btnPracticeStart">Empezar</button>
+<button id="btnBack2">Volver</button>
+</div>
 
-      <div class="row" style="margin-top:10px;">
-        <button id="btnExit">Salir al menú</button>
-      </div>
-    </div>
+</div>
 
-    <!-- RESULT -->
-    <div id="result" class="qbox" style="display:none;">
-      <div id="finalScore" style="font-size:18px; font-weight:1000;"></div>
 
-      <div id="globalBoxResult" class="qbox globalBox" style="display:none;">
-        <b>Marcador global (puntos + victorias)</b>
-        <div class="muted" id="globalTextResult"></div>
-      </div>
+<!-- GAME -->
+<div id="game" class="qbox" style="display:none">
 
-      <div id="shareBlock" style="display:none;">
-        <div class="muted">Texto listo para WhatsApp:</div>
-        <textarea id="shareText" readonly></textarea>
-        <div class="row">
-          <button id="btnCopy">Copiar</button>
-          <button id="btnRestartSame">Jugar otra vez (misma seed)</button>
-        </div>
-      </div>
+<div id="qHeader"></div>
 
-      <div class="review" id="reviewBox" style="display:none;">
-        <h2>Repaso 🧠 (lo que no fue perfecto)</h2>
-        <div class="muted" style="margin-top:0;">Consejo: rejuega para clavarlas.</div>
-        <ul id="reviewList"></ul>
-      </div>
+<label id="qLabel"></label>
+<input id="answer">
 
-      <div class="row" style="margin-top:10px;">
-        <button id="btnResultMenu">Volver al menú</button>
-      </div>
+<div class="row" style="margin-top:10px">
+<button id="btnSubmit">Responder</button>
+<button id="btnNext" disabled>Siguiente</button>
+</div>
 
-      <div class="footer">
-        Competición = seed + WhatsApp + global · Práctica = sin seed + zonas + tanda
-      </div>
-    </div>
-  </div>
+<div id="feedback" class="status"></div>
+
+</div>
+
+
+<!-- RESULT -->
+<div id="result" class="qbox" style="display:none">
+
+<div id="finalScore" style="font-weight:900;font-size:20px"></div>
+
+<button id="btnMenu">Volver al menú</button>
+
+</div>
+
+</div>
+
 
 <script>
-/* ===== CONFIG GLOBAL ===== */
-const GLOBAL_URL = "https://script.google.com/macros/s/AKfycbxpZHqVoJswl7sCZmAU2YsWZxRBT2JcFrrSaYYVzQ2lumqNkgTHsFcZHgmaN1P422UeOQ/exec";
-const GLOBAL_TOKEN = "K9f2A-1xPq_2026_SUPERSECRETO_98345";
 
-/* ===== DATA =====
-   Formato: [País, Capital(es), Continente, Región, Tanda]
-*/
-const DATA = [
-  // TANDA 1
-  ["España","Madrid","Europa","",1],
-  ["Francia","París","Europa","",1],
-  ["Italia","Roma","Europa","",1],
-  ["Alemania","Berlín","Europa","",1],
-  ["Portugal","Lisboa","Europa","",1],
-  ["Países Bajos","Ámsterdam","Europa","",1],
-  ["Bélgica","Bruselas","Europa","",1],
-  ["Suiza","Berna","Europa","",1],
-  ["Austria","Viena","Europa","",1],
-  ["Irlanda","Dublín","Europa","",1],
-  ["Reino Unido","Londres","Europa","",1],
-  ["Noruega","Oslo","Europa","",1],
-  ["Suecia","Estocolmo","Europa","",1],
-  ["Finlandia","Helsinki","Europa","",1],
-  ["Dinamarca","Copenhague","Europa","",1],
-  ["Polonia","Varsovia","Europa","",1],
-  ["Chequia","Praga","Europa","",1],
-  ["Hungría","Budapest","Europa","",1],
-  ["Rumanía","Bucarest","Europa","",1],
-  ["Grecia","Atenas","Europa","",1],
-  ["Ucrania","Kiev | Kyiv","Europa","",1],
+const DATA=[
+["España","Madrid"],
+["Francia","París"],
+["Italia","Roma"],
+["Alemania","Berlín"],
+["Portugal","Lisboa"],
+["Países Bajos","Ámsterdam"],
+["Bélgica","Bruselas"],
+["Suiza","Berna"],
+["Austria","Viena"],
+["Irlanda","Dublín"],
+["Reino Unido","Londres"],
+["Noruega","Oslo"],
+["Suecia","Estocolmo"],
+["Finlandia","Helsinki"],
+["Dinamarca","Copenhague"],
+["Polonia","Varsovia"],
+["Chequia","Praga"],
+["Hungría","Budapest"],
+["Rumanía","Bucarest"],
+["Grecia","Atenas"],
+["Estados Unidos","Washington"],
+["Canadá","Ottawa"],
+["México","Ciudad de México"],
+["Argentina","Buenos Aires"],
+["Brasil","Brasilia"],
+["Chile","Santiago"],
+["Perú","Lima"],
+["Japón","Tokio"],
+["China","Pekín"],
+["Corea del Sur","Seúl"],
+["India","Nueva Delhi"],
+["Indonesia","Yakarta"],
+["Filipinas","Manila"],
+["Egipto","El Cairo"],
+["Marruecos","Rabat"],
+["Nigeria","Abuya"],
+["Kenia","Nairobi"],
+["Sudáfrica","Pretoria"],
+["Australia","Canberra"],
+["Nueva Zelanda","Wellington"]
+]
 
-  ["Estados Unidos","Washington D. C. | Washington DC | Washington D.C. | Washington","América","",1],
-  ["Canadá","Ottawa","América","",1],
-  ["México","Ciudad de México","América","",1],
-  ["Guatemala","Ciudad de Guatemala","América","",1],
-  ["Honduras","Tegucigalpa","América","",1],
-  ["El Salvador","San Salvador","América","",1],
-  ["Nicaragua","Managua","América","",1],
-  ["Costa Rica","San José","América","",1],
-  ["Panamá","Ciudad de Panamá","América","",1],
-  ["Cuba","La Habana","América","",1],
-  ["República Dominicana","Santo Domingo","América","",1],
-  ["Colombia","Bogotá","América","",1],
-  ["Venezuela","Caracas","América","",1],
-  ["Ecuador","Quito","América","",1],
-  ["Perú","Lima","América","",1],
-  ["Chile","Santiago","América","",1],
-  ["Argentina","Buenos Aires","América","",1],
-  ["Uruguay","Montevideo","América","",1],
-  ["Paraguay","Asunción","América","",1],
-  ["Brasil","Brasilia | Brasília","América","",1],
-  ["Bolivia","Sucre | La Paz","América","",1],
+const $=id=>document.getElementById(id)
 
-  ["Japón","Tokio","Asia","",1],
-  ["China","Pekín | Beijing","Asia","",1],
-  ["Corea del Sur","Seúl","Asia","",1],
-  ["Corea del Norte","Pionyang | Pyongyang","Asia","",1],
-  ["Vietnam","Hanói","Asia","",1],
-  ["Tailandia","Bangkok","Asia","",1],
-  ["Camboya","Nom Pen | Phnom Penh","Asia","",1],
-  ["Malasia","Kuala Lumpur","Asia","",1],
-  ["Singapur","Singapur","Asia","",1],
-  ["Indonesia","Yakarta","Asia","",1],
-  ["Filipinas","Manila","Asia","",1],
-  ["India","Nueva Delhi | Delhi","Asia","",1],
-  ["Pakistán","Islamabad","Asia","",1],
-
-  ["Irán","Teherán","Asia","Oriente Medio",1],
-  ["Irak","Bagdad","Asia","Oriente Medio",1],
-  ["Arabia Saudí","Riad","Asia","Oriente Medio",1],
-  ["Emiratos Árabes Unidos","Abu Dabi","Asia","Oriente Medio",1],
-  ["Catar","Doha","Asia","Oriente Medio",1],
-  ["Kuwait","Ciudad de Kuwait","Asia","Oriente Medio",1],
-  ["Baréin","Manama","Asia","Oriente Medio",1],
-  ["Omán","Mascate","Asia","Oriente Medio",1],
-  ["Yemen","Saná | Sana'a","Asia","Oriente Medio",1],
-  ["Israel","Jerusalén","Asia","Oriente Medio",1],
-  ["Jordania","Amán","Asia","Oriente Medio",1],
-  ["Líbano","Beirut","Asia","Oriente Medio",1],
-  ["Siria","Damasco","Asia","Oriente Medio",1],
-  ["Turquía","Ankara","Asia","Oriente Medio",1],
-
-  ["Marruecos","Rabat","África","",1],
-  ["Argelia","Argel","África","",1],
-  ["Túnez","Túnez","África","",1],
-  ["Egipto","El Cairo","África","",1],
-  ["Senegal","Dakar","África","",1],
-  ["Mali","Bamako","África","",1],
-  ["Níger","Niamey","África","",1],
-  ["Nigeria","Abuya","África","",1],
-  ["Ghana","Acra","África","",1],
-  ["Costa de Marfil","Yamusukro | Yamoussoukro","África","",1],
-  ["Camerún","Yaundé | Yaoundé","África","",1],
-  ["Kenia","Nairobi","África","",1],
-  ["Uganda","Kampala","África","",1],
-  ["Tanzania","Dodoma","África","",1],
-  ["Etiopía","Adís Abeba | Addis Abeba","África","",1],
-  ["Sudáfrica","Pretoria | Ciudad del Cabo | Bloemfontein","África","",1],
-
-  ["Australia","Canberra","Oceanía","",1],
-  ["Nueva Zelanda","Wellington","Oceanía","",1],
-  ["Fiyi","Suva","Oceanía","",1],
-  ["Papúa Nueva Guinea","Port Moresby","Oceanía","",1],
-
-  // TANDA 2
-  ["Rusia","Moscú","Europa","",2],
-  ["Bielorrusia","Minsk","Europa","",2],
-  ["Serbia","Belgrado","Europa","",2],
-  ["Bulgaria","Sofía","Europa","",2],
-  ["Eslovaquia","Bratislava","Europa","",2],
-  ["Croacia","Zagreb","Europa","",2],
-  ["Moldavia","Chisináu","Europa","",2],
-  ["Bosnia y Herzegovina","Sarajevo","Europa","",2],
-  ["Albania","Tirana","Europa","",2],
-  ["Lituania","Vilna","Europa","",2],
-  ["Macedonia del Norte","Skopie","Europa","",2],
-  ["Eslovenia","Liubliana","Europa","",2],
-  ["Letonia","Riga","Europa","",2],
-  ["Estonia","Tallin","Europa","",2],
-  ["Luxemburgo","Luxemburgo","Europa","",2],
-
-  ["República Democrática del Congo","Kinsasa","África","",2],
-  ["Sudán","Jartum","África","",2],
-  ["Angola","Luanda","África","",2],
-  ["Mozambique","Maputo","África","",2],
-  ["Madagascar","Antananarivo","África","",2],
-  ["Burkina Faso","Uagadugú","África","",2],
-  ["Malaui","Lilongüe","África","",2],
-  ["Zambia","Lusaka","África","",2],
-  ["Chad","Yamena | N'Djamena","África","",2],
-  ["Somalia","Mogadiscio","África","",2],
-
-  ["Haití","Puerto Príncipe","América","",2],
-  ["Jamaica","Kingston","América","",2],
-  ["Trinidad y Tobago","Puerto España","América","",2],
-  ["Guyana","Georgetown","América","",2],
-  ["Surinam","Paramaribo","América","",2],
-  ["Belice","Belmopán","América","",2],
-  ["Bahamas","Nasáu | Nassau","América","",2],
-  ["Barbados","Bridgetown","América","",2],
-  ["Santa Lucía","Castries","América","",2],
-  ["Granada","Saint George's | Saint George’s","América","",2],
-
-  ["Bangladés","Daca | Dhaka","Asia","",2],
-  ["Myanmar","Naipyidó | Naypyidaw","Asia","",2],
-  ["Afganistán","Kabul","Asia","",2],
-  ["Uzbekistán","Taskent | Tashkent","Asia","",2],
-  ["Nepal","Katmandú","Asia","",2],
-  ["Sri Lanka","Sri Jayawardenepura Kotte | Colombo","Asia","",2],
-  ["Kazajistán","Astaná | Astana","Asia","",2],
-  ["Tayikistán","Dusambé | Dushanbé | Dushanbe","Asia","",2],
-  ["Azerbaiyán","Bakú","Asia","",2],
-  ["Laos","Vientián","Asia","",2],
-
-  ["Islas Salomón","Honiara","Oceanía","",2],
-  ["Vanuatu","Port Vila","Oceanía","",2],
-  ["Samoa","Apia","Oceanía","",2],
-  ["Kiribati","Tarawa del Sur","Oceanía","",2],
-  ["Estados Federados de Micronesia","Palikir","Oceanía","",2],
-];
-
-/* ===== Helpers ===== */
-const $ = (id) => document.getElementById(id);
-
-function normBasic(s) {
-  return (s ?? "").trim().replace(/\s+/g, " ").toLocaleLowerCase("es");
+function shuffle(a){
+for(let i=a.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1))
+;[a[i],a[j]]=[a[j],a[i]]
 }
-function stripAccents(s) {
-  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-function acceptedAnswers(capitalStr) {
-  return capitalStr.split("|").map(x => normBasic(x));
-}
-function scoreAnswer(userRaw, capitalStr) {
-  const user = normBasic(userRaw);
-  const accepted = acceptedAnswers(capitalStr);
-  if (accepted.includes(user)) return { points: 1, type: "full" };
-
-  const userNoAcc = stripAccents(user);
-  const acceptedNoAcc = accepted.map(a => stripAccents(a));
-  if (acceptedNoAcc.includes(userNoAcc)) return { points: 0.5, type: "half" };
-
-  return { points: 0, type: "none" };
-}
-function fmtScore(x) {
-  const s = (Math.round(x * 2) / 2).toString();
-  return s.replace(".", ",");
-}
-function setFeedback(msg, style) {
-  $("feedback").textContent = msg;
-  $("feedback").className = "status " + (style || "");
 }
 
-/* ===== PRNG ===== */
-function mulberry32(seed) {
-  let a = seed >>> 0;
-  return function() {
-    a |= 0; a = (a + 0x6D2B79F5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-function randInt(rng, max) { return Math.floor(rng() * max); }
-function shuffleInPlace(arr, rng) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = randInt(rng, i + 1);
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
+let state={
+questions:[],
+idx:0,
+score:0
 }
 
-/* ===== Question selection ===== */
-const MUST_HAVE_REGION = "Oriente Medio";
 
-// Competición: 20 preguntas, cuotas y SIEMPRE 2 de Oceanía
-const COMP_NUM_Q = 20;
+function startGame(list){
 
-// (puedes cambiar estas cuotas si quieres)
-const COMP_QUOTAS = { "Europa":5, "América":5, "Asia":5, "África":3, "Oceanía":2 };
+state.questions=list
+state.idx=0
+state.score=0
 
-function pickCompetitionQuestions(seed) {
-  const rng = mulberry32(seed);
-  const poolAll = DATA.slice();
+$("menu").style.display="none"
+$("setupComp").style.display="none"
+$("setupPractice").style.display="none"
+$("game").style.display="block"
 
-  const byCont = {};
-  for (const item of poolAll) (byCont[item[2]] ||= []).push(item);
+showQuestion()
 
-  const picked = [];
-  const used = new Set();
-
-  function take(cont, k) {
-    const pool = byCont[cont] || [];
-    const avail = pool.filter(x => !used.has(x[0]));
-    if (avail.length < k) throw new Error(`No hay suficientes países en ${cont} para elegir ${k}.`);
-    shuffleInPlace(avail, rng);
-    for (let i=0; i<k; i++) {
-      picked.push(avail[i]);
-      used.add(avail[i][0]);
-    }
-  }
-
-  // 1) Cuotas (incluye Oceanía=2 sí o sí)
-  for (const [cont, k] of Object.entries(COMP_QUOTAS)) {
-    take(cont, k);
-  }
-
-  // 2) Garantía Oriente Medio (sustituyendo una pregunta NO-Oceanía si hace falta)
-  if (!picked.some(x => x[3] === MUST_HAVE_REGION)) {
-    const mePool = poolAll.filter(x => x[3] === MUST_HAVE_REGION && !used.has(x[0]));
-    if (mePool.length > 0) {
-      shuffleInPlace(mePool, rng);
-      const me = mePool[0];
-
-      // reemplazamos la última que NO sea de Oceanía para no perder "2 de Oceanía"
-      let idxToReplace = picked.length - 1;
-      for (let i = picked.length - 1; i >= 0; i--) {
-        if (picked[i][2] !== "Oceanía") { idxToReplace = i; break; }
-      }
-      used.delete(picked[idxToReplace][0]);
-      picked[idxToReplace] = me;
-      used.add(me[0]);
-    }
-  }
-
-  // 3) Mezclar
-  shuffleInPlace(picked, rng);
-  return picked;
 }
 
-// Práctica: filtra por zonas + ME + tanda
-function pickPracticeQuestions(n, zones, tandaMode) {
-  const continents = zones.continents;
-  const includeME = zones.includeME;
 
-  let pool = DATA.filter(x => continents.has(x[2]));
+function showQuestion(){
 
-  if (includeME) {
-    const me = DATA.filter(x => x[3] === MUST_HAVE_REGION);
-    const keys = new Set(pool.map(p => p[0]));
-    for (const item of me) if (!keys.has(item[0])) pool.push(item);
-  } else {
-    pool = pool.filter(x => x[3] !== MUST_HAVE_REGION);
-  }
+let q=state.questions[state.idx]
 
-  if (tandaMode === "1") pool = pool.filter(x => x[4] === 1);
-  else if (tandaMode === "2") pool = pool.filter(x => x[4] === 2);
+$("qHeader").textContent=`${state.idx+1}/${state.questions.length}`
 
-  if (pool.length === 0) throw new Error("No hay países con esos filtros. Marca alguna zona o cambia la tanda.");
-
-  const copy = pool.slice();
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-
-  const limit = Number.isFinite(n) ? n : copy.length; // Infinity => todos
-  return copy.slice(0, Math.min(limit, copy.length));
+if(q.mode==="cap"){
+$("qLabel").textContent=`Capital de ${q.country}`
+}else{
+$("qLabel").textContent=`País de ${q.capital}`
 }
 
-/* ===== Global JSONP ===== */
-function saveNames(name, opp) {
-  localStorage.setItem("cap_name", name);
-  localStorage.setItem("cap_opp", opp);
-}
-function loadNames() {
-  return { name: localStorage.getItem("cap_name") || "", opp: localStorage.getItem("cap_opp") || "" };
+$("answer").value=""
+$("feedback").textContent=""
+$("btnSubmit").disabled=false
+$("btnNext").disabled=true
+
 }
 
-function jsonpRequest(url) {
-  return new Promise((resolve, reject) => {
-    const cbName = "cb_" + Math.random().toString(36).slice(2);
-    window[cbName] = (data) => {
-      try { resolve(data); }
-      finally {
-        delete window[cbName];
-        script.remove();
-      }
-    };
 
-    const script = document.createElement("script");
-    const u = new URL(url);
-    u.searchParams.set("callback", cbName);
-    script.src = u.toString();
-    script.onerror = () => {
-      delete window[cbName];
-      script.remove();
-      reject(new Error("JSONP error"));
-    };
-    document.head.appendChild(script);
-  });
+function submitAnswer(){
+
+let q=state.questions[state.idx]
+let ans=$("answer").value.trim().toLowerCase()
+
+let correct=(q.mode==="cap"?q.capital:q.country).toLowerCase()
+
+if(ans===correct){
+state.score++
+$("feedback").textContent="✅ Correcto"
+$("feedback").className="status ok"
+}else{
+$("feedback").textContent=`❌ Correcto: ${correct}`
+$("feedback").className="status bad"
 }
 
-async function fetchGlobal(player, opponent) {
-  const u = new URL(GLOBAL_URL);
-  u.searchParams.set("token", GLOBAL_TOKEN);
-  u.searchParams.set("player", player);
-  u.searchParams.set("opponent", opponent);
-  const j = await jsonpRequest(u.toString());
-  if (!j.ok) throw new Error(j.error || "No se pudo leer global");
-  return j.global;
+$("btnSubmit").disabled=true
+$("btnNext").disabled=false
+
 }
 
-async function postResult(player, opponent, seed, score) {
-  const u = new URL(GLOBAL_URL);
-  u.searchParams.set("token", GLOBAL_TOKEN);
-  u.searchParams.set("action", "post");
-  u.searchParams.set("player", player);
-  u.searchParams.set("opponent", opponent);
-  u.searchParams.set("seed", String(seed));
-  u.searchParams.set("score", String(score));
-  const j = await jsonpRequest(u.toString());
-  if (!j.ok) throw new Error(j.error || "No se pudo guardar resultado");
-  return j.global;
+
+function nextQuestion(){
+
+state.idx++
+
+if(state.idx>=state.questions.length){
+finish()
+}else{
+showQuestion()
 }
 
-function renderGlobal(g) {
-  const p1 = g.p1, p2 = g.p2;
-  const txt =
-    `Partidas comparables: ${g.matches} (empates: ${g.draws})\n` +
-    `Victorias: ${p1} ${g.wins[p1]} — ${p2} ${g.wins[p2]}\n` +
-    `Puntos totales: ${p1} ${fmtScore(g.points[p1])} — ${p2} ${fmtScore(g.points[p2])}`;
-
-  $("globalBoxSetup").style.display = "block";
-  $("globalTextSetup").textContent = txt;
-  $("globalHintSetup").textContent = "Se actualiza al terminar cada partida (si ambos jugáis la misma seed).";
-
-  $("globalBoxResult").style.display = "block";
-  $("globalTextResult").textContent = txt;
 }
 
-/* ===== UI ===== */
-function resetViews() {
-  $("menu").style.display = "none";
-  $("setupComp").style.display = "none";
-  $("setupPractice").style.display = "none";
-  $("game").style.display = "none";
-  $("result").style.display = "none";
+
+function finish(){
+
+$("game").style.display="none"
+$("result").style.display="block"
+
+$("finalScore").textContent=`Resultado: ${state.score}/${state.questions.length}`
+
 }
 
-function showMenu() {
-  resetViews();
-  $("menu").style.display = "block";
+
+/* COMPETITION */
+
+function startCompetition(){
+
+let list=DATA.slice()
+shuffle(list)
+
+let a=list.slice(0,10).map(x=>({country:x[0],capital:x[1],mode:"cap"}))
+let b=list.slice(10,20).map(x=>({country:x[0],capital:x[1],mode:"country"}))
+
+let q=[...a,...b]
+shuffle(q)
+
+startGame(q)
+
 }
 
-let state = {
-  mode: null, seed: null, name: "", opponent: "",
-  questions: [], idx: 0, score: 0,
-  locked: false, lastWasAnswered: false,
-  history: [], totalQ: 0, restartFn: null
-};
 
-function startGameCommon({ mode, name, opponent, questions, seed, restartFn }) {
-  state.mode = mode;
-  state.name = name || "Jugador";
-  state.opponent = opponent || "";
-  state.questions = questions;
-  state.seed = seed ?? null;
-  state.idx = 0;
-  state.score = 0;
-  state.locked = false;
-  state.lastWasAnswered = false;
-  state.history = [];
-  state.totalQ = questions.length;
-  state.restartFn = restartFn || null;
+/* PRACTICE */
 
-  resetViews();
-  $("game").style.display = "block";
-  showQuestion();
+function startPractice(){
+
+let nRaw=$("pracN").value
+let mode=$("pracMode").value
+
+let list=DATA.slice()
+shuffle(list)
+
+let n=(nRaw==="all")?list.length:Number(nRaw)
+
+list=list.slice(0,n)
+
+let q=list.map(x=>{
+
+let m
+
+if(mode==="mix"){
+m=Math.random()<0.5?"cap":"country"
+}else{
+m=mode
 }
 
-function showQuestion() {
-  state.locked = false;
-  state.lastWasAnswered = false;
-  $("btnNext").disabled = true;
-  $("btnSubmit").disabled = false;
+return{country:x[0],capital:x[1],mode:m}
 
-  const q = state.questions[state.idx];
-  const regionPill = q[3] ? `<span class="pill">${q[3]}</span>` : "";
-  const tandaPill = `<span class="pill">T${q[4]}</span>`;
-  $("qHeader").innerHTML =
-    `<b>${state.mode === "competition" ? "Competición" : "Práctica"}</b>` +
-    ` <span class="pill">${state.idx+1}/${state.totalQ}</span>` +
-    ` <span class="pill">${q[2]}</span> ${regionPill} ${tandaPill}`;
+})
 
-  $("qLabel").textContent = `Capital de ${q[0]}:`;
-  $("answer").value = "";
-  $("answer").focus();
+startGame(q)
 
-  $("hint").textContent = q[1].includes("|")
-    ? "Este país admite varias respuestas válidas (con poner una te vale)."
-    : "";
-
-  setFeedback("", "");
 }
 
-function submitAnswer() {
-  if (state.locked) return;
 
-  const q = state.questions[state.idx];
-  const userRaw = $("answer").value;
+/* BUTTONS */
 
-  const res = scoreAnswer(userRaw, q[1]);
-  state.score += res.points;
-
-  state.history.push({ pais: q[0], capital: q[1], user: userRaw, points: res.points });
-
-  if (res.points === 1) setFeedback("✅ Correcto (+1)", "ok");
-  else if (res.points === 0.5) setFeedback(`🟡 Casi. Te faltó alguna tilde. (+0,5)\nVálida: ${q[1]}`, "warn");
-  else setFeedback(`❌ Incorrecto (+0)\nVálida: ${q[1]}`, "bad");
-
-  state.locked = true;
-  state.lastWasAnswered = true;
-  $("btnSubmit").disabled = true;
-  $("btnNext").disabled = false;
+$("goComp").onclick=()=>{
+$("menu").style.display="none"
+$("setupComp").style.display="block"
 }
 
-function nextQuestion() {
-  if (!state.lastWasAnswered) return;
-  state.idx++;
-  if (state.idx >= state.totalQ) finish();
-  else showQuestion();
+$("goPractice").onclick=()=>{
+$("menu").style.display="none"
+$("setupPractice").style.display="block"
 }
 
-function buildReview() {
-  const list = $("reviewList");
-  list.innerHTML = "";
-  const imperfect = state.history.filter(h => h.points < 1);
-
-  $("reviewBox").style.display = "block";
-  if (imperfect.length === 0) {
-    list.innerHTML = "<li>🔥 Perfecto: todo correcto. No hay nada que repasar.</li>";
-    return;
-  }
-  for (const h of imperfect) {
-    const badge = h.points === 0.5 ? "🟡" : "❌";
-    const got = h.user.trim() ? `Tu respuesta: <code>${h.user}</code>` : "Tu respuesta: <code>(vacío)</code>";
-    const li = document.createElement("li");
-    li.innerHTML = `${badge} <b>${h.pais}</b> → válida: <code>${h.capital}</code> · ${got}`;
-    list.appendChild(li);
-  }
+$("btnBack1").onclick=()=>{
+$("setupComp").style.display="none"
+$("menu").style.display="block"
 }
 
-async function finish() {
-  resetViews();
-  $("result").style.display = "block";
-
-  $("finalScore").textContent = `${state.name} → ${fmtScore(state.score)}/${state.totalQ}`;
-
-  $("globalBoxResult").style.display = "none";
-
-  if (state.mode === "competition") {
-    $("shareBlock").style.display = "block";
-    $("shareText").value = `${state.name} -> ${fmtScore(state.score)}/${state.totalQ} (seed ${state.seed})`;
-    $("btnRestartSame").style.display = "inline-block";
-
-    try {
-      const g = await postResult(state.name, state.opponent, state.seed, state.score);
-      renderGlobal(g);
-    } catch (e) {
-      console.log("Global error:", e);
-    }
-  } else {
-    $("shareBlock").style.display = "none";
-  }
-
-  buildReview();
+$("btnBack2").onclick=()=>{
+$("setupPractice").style.display="none"
+$("menu").style.display="block"
 }
 
-/* ===== Events ===== */
-$("goComp").addEventListener("click", async () => {
-  resetViews();
-  $("setupComp").style.display = "block";
+$("btnCompStart").onclick=startCompetition
+$("btnPracticeStart").onclick=startPractice
 
-  $("globalBoxSetup").style.display = "none";
+$("btnSubmit").onclick=submitAnswer
+$("btnNext").onclick=nextQuestion
 
-  const saved = loadNames();
-  $("compName").value = saved.name;
-  $("compOpponent").value = saved.opp;
+$("btnMenu").onclick=()=>{
+$("result").style.display="none"
+$("menu").style.display="block"
+}
 
-  if (saved.name && saved.opp) {
-    try {
-      const g = await fetchGlobal(saved.name, saved.opp);
-      renderGlobal(g);
-    } catch (e) {}
-  }
-});
-
-$("goPractice").addEventListener("click", () => {
-  resetViews();
-  $("setupPractice").style.display = "block";
-});
-
-$("btnBack1").addEventListener("click", showMenu);
-$("btnBack2").addEventListener("click", showMenu);
-$("btnExit").addEventListener("click", showMenu);
-$("btnResultMenu").addEventListener("click", showMenu);
-
-$("btnCompSeed").addEventListener("click", () => {
-  const seed = Math.floor(Date.now() % 1000000000);
-  $("compSeed").value = String(seed);
-});
-
-$("btnCompStart").addEventListener("click", async () => {
-  const name = $("compName").value.trim() || "Jugador";
-  const opponent = $("compOpponent").value.trim();
-  const seedTxt = $("compSeed").value.trim();
-
-  if (!opponent) return alert("Pon el nombre de tu rival.");
-  if (!seedTxt) return alert("Pon una seed (o pulsa Generar seed).");
-  const seed = Number(seedTxt);
-  if (!Number.isFinite(seed) || seed <= 0) return alert("La seed debe ser un número positivo (ej: 74219).");
-
-  saveNames(name, opponent);
-
-  try {
-    const g = await fetchGlobal(name, opponent);
-    renderGlobal(g);
-  } catch(e) {}
-
-  const s = Math.floor(seed);
-  const questions = pickCompetitionQuestions(s);
-
-  startGameCommon({
-    mode: "competition",
-    name,
-    opponent,
-    questions,
-    seed: s,
-    restartFn: () => {
-      const q2 = pickCompetitionQuestions(s);
-      startGameCommon({ mode:"competition", name, opponent, questions:q2, seed:s, restartFn: state.restartFn });
-    }
-  });
-});
-
-$("btnPracticeStart").addEventListener("click", () => {
-  const name = $("pracName").value.trim() || "Jugador";
-
-  const nRaw = $("pracN").value;
-  const n = (nRaw === "all") ? Infinity : (Number(nRaw) || 10);
-
-  const tandaMode = $("pracTanda").value;
-
-  const continents = new Set();
-  if ($("zEuropa").checked) continents.add("Europa");
-  if ($("zAmerica").checked) continents.add("América");
-  if ($("zAsia").checked) continents.add("Asia");
-  if ($("zAfrica").checked) continents.add("África");
-  if ($("zOceania").checked) continents.add("Oceanía");
-  const includeME = $("zME").checked;
-
-  try {
-    const questions = pickPracticeQuestions(n, { continents, includeME }, tandaMode);
-    startGameCommon({
-      mode: "practice",
-      name,
-      opponent: "",
-      questions,
-      seed: null,
-      restartFn: () => {
-        const q2 = pickPracticeQuestions(n, { continents, includeME }, tandaMode);
-        startGameCommon({ mode:"practice", name, opponent:"", questions:q2, seed:null, restartFn: state.restartFn });
-      }
-    });
-  } catch (e) {
-    alert(e.message || "Error en práctica. Marca alguna zona o cambia la tanda.");
-  }
-});
-
-$("btnSubmit").addEventListener("click", submitAnswer);
-$("btnNext").addEventListener("click", nextQuestion);
-$("answer").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") submitAnswer();
-});
-
-$("btnRestartSame").addEventListener("click", () => {
-  if (typeof state.restartFn === "function") state.restartFn();
-});
-
-$("btnCopy").addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText($("shareText").value);
-    alert("Copiado ✅");
-  } catch {
-    $("shareText").select();
-    document.execCommand("copy");
-    alert("Copiado ✅");
-  }
-});
-
-showMenu();
 </script>
+
 </body>
 </html>
