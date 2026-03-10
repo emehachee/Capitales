@@ -60,14 +60,14 @@
       <div class="menuGrid">
         <div class="menuCard">
           <b>Modo Competición (con seed)</b>
-          <p>20 preguntas: incluye siempre 2 de Oceanía. Incluye Oriente Medio. Guarda y muestra un global (puntos + victorias).</p>
+          <p>20 preguntas: incluye siempre 2 de Oceanía, incluye Oriente Medio y ahora también mínimo 2 de la tanda 3. Guarda y muestra un global (puntos + victorias).</p>
           <div class="row" style="margin-top:10px;">
             <button id="goComp">Entrar a Competición</button>
           </div>
         </div>
         <div class="menuCard">
           <b>Modo Práctica / Repaso (sin seed)</b>
-          <p>Eliges zonas y, además, puedes practicar solo la tanda 1, solo la tanda 2 o ambas.</p>
+          <p>Eliges zonas y también puedes filtrar por tanda, por dirección (país→capital / capital→país) o mixto.</p>
           <div class="row" style="margin-top:10px;">
             <button id="goPractice">Entrar a Práctica</button>
           </div>
@@ -136,11 +136,12 @@
         <div>
           <label>Tanda de práctica</label>
           <select id="pracTanda">
-            <option value="both" selected>Ambas (tanda 1 + tanda 2)</option>
-            <option value="1">Solo tanda 1 (las antiguas)</option>
-            <option value="2">Solo tanda 2 (las nuevas)</option>
+            <option value="all" selected>Todas (tanda 1 + tanda 2 + tanda 3)</option>
+            <option value="1">Solo tanda 1</option>
+            <option value="2">Solo tanda 2</option>
+            <option value="3">Solo tanda 3</option>
           </select>
-          <div class="mini">Competición siempre usa ambas tandas.</div>
+          <div class="mini">Competición siempre usa todas las tandas.</div>
         </div>
 
         <div>
@@ -346,29 +347,29 @@ const DATA = [
   ["Bosnia y Herzegovina","Sarajevo","Europa","",2],
   ["Albania","Tirana","Europa","",2],
   ["Lituania","Vilna","Europa","",2],
-  ["Macedonia del Norte","Skopie","Europa","",2],
+  ["Macedonia del Norte","Skopie | Skopje","Europa","",2],
   ["Eslovenia","Liubliana","Europa","",2],
   ["Letonia","Riga","Europa","",2],
   ["Estonia","Tallin","Europa","",2],
   ["Luxemburgo","Luxemburgo","Europa","",2],
 
-  ["República Democrática del Congo","Kinsasa","África","",2],
-  ["Sudán","Jartum","África","",2],
+  ["República Democrática del Congo","Kinsasa | Kinshasa","África","",2],
+  ["Sudán","Jartum | Khartum","África","",2],
   ["Angola","Luanda","África","",2],
   ["Mozambique","Maputo","África","",2],
   ["Madagascar","Antananarivo","África","",2],
-  ["Burkina Faso","Uagadugú","África","",2],
-  ["Malaui","Lilongüe","África","",2],
+  ["Burkina Faso","Uagadugú | Ouagadougou","África","",2],
+  ["Malaui","Lilongüe | Lilongwe","África","",2],
   ["Zambia","Lusaka","África","",2],
-  ["Chad","Yamena | N'Djamena","África","",2],
+  ["Chad","Yamena | N'Djamena | Ndjamena","África","",2],
   ["Somalia","Mogadiscio","África","",2],
 
   ["Haití","Puerto Príncipe","América","",2],
   ["Jamaica","Kingston","América","",2],
-  ["Trinidad y Tobago","Puerto España","América","",2],
+  ["Trinidad y Tobago","Puerto España | Puerto España","América","",2],
   ["Guyana","Georgetown","América","",2],
   ["Surinam","Paramaribo","América","",2],
-  ["Belice","Belmopán","América","",2],
+  ["Belice","Belmopán | Belmopan","América","",2],
   ["Bahamas","Nasáu | Nassau","América","",2],
   ["Barbados","Bridgetown","América","",2],
   ["Santa Lucía","Castries","América","",2],
@@ -390,6 +391,43 @@ const DATA = [
   ["Samoa","Apia","Oceanía","",2],
   ["Kiribati","Tarawa del Sur","Oceanía","",2],
   ["Estados Federados de Micronesia","Palikir","Oceanía","",2],
+
+  // TANDA 3
+  // EUROPA (los que te faltaban)
+  ["Andorra","Andorra la Vieja | Andorra la Vella","Europa","",3],
+  ["Islandia","Reikiavik | Reikiavík | Reykjavik","Europa","",3],
+  ["Liechtenstein","Vaduz","Europa","",3],
+  ["Malta","La Valeta | Valletta","Europa","",3],
+  ["Mónaco","Mónaco | Monaco","Europa","",3],
+  ["Montenegro","Podgorica","Europa","",3],
+  ["San Marino","San Marino","Europa","",3],
+  ["Ciudad del Vaticano","Ciudad del Vaticano | Vaticano","Europa","",3],
+
+  // ASIA (los 12 que te faltaban)
+  ["Armenia","Ereván | Yerevan","Asia","",3],
+  ["Bután","Timbu | Thimphu","Asia","",3],
+  ["Brunéi","Bandar Seri Begawan","Asia","",3],
+  ["Chipre","Nicosia","Asia","",3],
+  ["Georgia","Tiflis | Tbilisi","Asia","",3],
+  ["Kirguistán","Biskek | Bishkek","Asia","",3],
+  ["Maldivas","Malé","Asia","",3],
+  ["Mongolia","Ulán Bator | Ulaanbaatar","Asia","",3],
+  ["Palestina","Ramala | Jerusalén Este","Asia","Oriente Medio",3],
+  ["Timor Oriental","Dili","Asia","",3],
+  ["Turkmenistán","Asjabad | Ashgabat","Asia","",3],
+  ["Taiwán","Taipéi | Taipei","Asia","",3],
+
+  // ÁFRICA (los 10 pendientes más poblados)
+  ["Zimbabue","Harare","África","",3],
+  ["Guinea","Conakri | Conakry","África","",3],
+  ["Benín","Porto Novo | Porto-Novo","África","",3],
+  ["Ruanda","Kigali","África","",3],
+  ["Burundi","Gitega","África","",3],
+  ["Sudán del Sur","Yuba | Juba","África","",3],
+  ["Togo","Lomé","África","",3],
+  ["Sierra Leona","Freetown","África","",3],
+  ["Libia","Trípoli","África","",3],
+  ["República del Congo","Brazzaville","África","",3],
 ];
 
 /* ===== Helpers ===== */
@@ -445,19 +483,17 @@ function shuffleInPlace(arr, rng) {
 /* ===== Question selection ===== */
 const MUST_HAVE_REGION = "Oriente Medio";
 
-// Competición: 20 preguntas, cuotas y SIEMPRE 2 de Oceanía
+// Competición: 20 preguntas, cuotas, SIEMPRE 2 de Oceanía y mínimo 2 de tanda 3
 const COMP_NUM_Q = 20;
+const COMP_MIN_TANDA3 = 2;
 
 // (puedes cambiar estas cuotas si quieres)
 const COMP_QUOTAS = { "Europa":5, "América":5, "Asia":5, "África":3, "Oceanía":2 };
 
 function pickOneCapitalFromStr(capitalStr, rngOrNull) {
-  const opts = acceptedAnswers(capitalStr).map(x => x.trim()).filter(Boolean);
+  const opts = String(capitalStr).split("|").map(x => x.trim()).filter(Boolean);
   if (opts.length === 0) return String(capitalStr);
   const idx = rngOrNull ? randInt(rngOrNull, opts.length) : Math.floor(Math.random() * opts.length);
-  // devolvemos en formato "bonito" (sin lowercase), usando el trozo original (pero ya normalizado)
-  // como no guardamos el original exacto, devolvemos el normalizado (se ve bien igualmente).
-  // Si quieres conservar mayúsculas exactas, habría que parsear el string original por '|'.
   return opts[idx];
 }
 
@@ -476,51 +512,109 @@ function pickCompetitionQuestions(seed) {
     const avail = pool.filter(x => !used.has(x[0]));
     if (avail.length < k) throw new Error(`No hay suficientes países en ${cont} para elegir ${k}.`);
     shuffleInPlace(avail, rng);
-    for (let i=0; i<k; i++) {
+    for (let i = 0; i < k; i++) {
       picked.push(avail[i]);
       used.add(avail[i][0]);
     }
   }
 
-  // 1) Cuotas (incluye Oceanía=2 sí o sí)
+  function replacePickedAt(idx, newItem) {
+    if (idx < 0 || idx >= picked.length) return false;
+    used.delete(picked[idx][0]);
+    picked[idx] = newItem;
+    used.add(newItem[0]);
+    return true;
+  }
+
+  function countRegion(region) {
+    return picked.filter(x => x[3] === region).length;
+  }
+
+  function countTanda(t) {
+    return picked.filter(x => x[4] === t).length;
+  }
+
+  function findReplaceIndexForTanda3() {
+    // Preferimos reemplazar algo que NO sea Oceanía, NO sea tanda 3 y NO sea Oriente Medio
+    for (let i = picked.length - 1; i >= 0; i--) {
+      if (picked[i][2] !== "Oceanía" && picked[i][4] !== 3 && picked[i][3] !== MUST_HAVE_REGION) return i;
+    }
+    // Si no hay, permitimos reemplazar Oriente Medio, ya se re-garantiza luego
+    for (let i = picked.length - 1; i >= 0; i--) {
+      if (picked[i][2] !== "Oceanía" && picked[i][4] !== 3) return i;
+    }
+    return -1;
+  }
+
+  function findReplaceIndexForME() {
+    // Preferimos reemplazar algo que NO sea Oceanía y NO sea tanda 3
+    for (let i = picked.length - 1; i >= 0; i--) {
+      if (picked[i][2] !== "Oceanía" && picked[i][4] !== 3) return i;
+    }
+    // Si no hay, cualquier no-Oceanía
+    for (let i = picked.length - 1; i >= 0; i--) {
+      if (picked[i][2] !== "Oceanía") return i;
+    }
+    return -1;
+  }
+
+  function ensureMinTanda3() {
+    let need = COMP_MIN_TANDA3 - countTanda(3);
+    if (need <= 0) return;
+
+    const t3Pool = poolAll.filter(x => x[4] === 3 && !used.has(x[0]));
+    shuffleInPlace(t3Pool, rng);
+
+    for (const item of t3Pool) {
+      if (need <= 0) break;
+      const idx = findReplaceIndexForTanda3();
+      if (idx === -1) break;
+      replacePickedAt(idx, item);
+      need--;
+    }
+  }
+
+  function ensureME() {
+    if (countRegion(MUST_HAVE_REGION) > 0) return;
+
+    const mePool = poolAll.filter(x => x[3] === MUST_HAVE_REGION && !used.has(x[0]));
+    if (mePool.length === 0) return;
+
+    shuffleInPlace(mePool, rng);
+    const me = mePool[0];
+    const idx = findReplaceIndexForME();
+    if (idx !== -1) replacePickedAt(idx, me);
+  }
+
+  // 1) Cuotas base
   for (const [cont, k] of Object.entries(COMP_QUOTAS)) {
     take(cont, k);
   }
 
-  // 2) Garantía Oriente Medio (sustituyendo una pregunta NO-Oceanía si hace falta)
-  if (!picked.some(x => x[3] === MUST_HAVE_REGION)) {
-    const mePool = poolAll.filter(x => x[3] === MUST_HAVE_REGION && !used.has(x[0]));
-    if (mePool.length > 0) {
-      shuffleInPlace(mePool, rng);
-      const me = mePool[0];
+  // 2) Forzar mínimo 2 de tanda 3
+  ensureMinTanda3();
 
-      // reemplazamos la última que NO sea de Oceanía para no perder "2 de Oceanía"
-      let idxToReplace = picked.length - 1;
-      for (let i = picked.length - 1; i >= 0; i--) {
-        if (picked[i][2] !== "Oceanía") { idxToReplace = i; break; }
-      }
-      used.delete(picked[idxToReplace][0]);
-      picked[idxToReplace] = me;
-      used.add(me[0]);
-    }
-  }
+  // 3) Garantizar Oriente Medio
+  ensureME();
 
-  // 3) Mezclar set base
+  // 4) Reforzar tanda 3 por si Oriente Medio hubiera desplazado uno
+  ensureMinTanda3();
+
+  // 5) Mezclar set base
   shuffleInPlace(picked, rng);
 
-  // 4) Convertir a preguntas: 10 país->capital, 10 capital->país
+  // 6) Convertir a preguntas: 10 país->capital, 10 capital->país
   const qs = picked.map((item, idx) => {
-    const dir = (idx < 10) ? "cap" : "country"; // 10 y 10
+    const dir = (idx < 10) ? "cap" : "country";
     if (dir === "cap") {
       return { item, dir };
     } else {
-      // capital->país: mostramos SOLO una capital válida (determinística)
       const shownCapital = pickOneCapitalFromStr(item[1], rng);
       return { item, dir, shownCapital };
     }
   });
 
-  // 5) Mezclar el orden final pero manteniendo 10/10 (ya asignado)
+  // 7) Mezclar el orden final
   shuffleInPlace(qs, rng);
   return qs;
 }
@@ -542,6 +636,7 @@ function pickPracticeQuestions(n, zones, tandaMode, dirMode) {
 
   if (tandaMode === "1") pool = pool.filter(x => x[4] === 1);
   else if (tandaMode === "2") pool = pool.filter(x => x[4] === 2);
+  else if (tandaMode === "3") pool = pool.filter(x => x[4] === 3);
 
   if (pool.length === 0) throw new Error("No hay países con esos filtros. Marca alguna zona o cambia la tanda.");
 
@@ -551,10 +646,9 @@ function pickPracticeQuestions(n, zones, tandaMode, dirMode) {
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
 
-  const limit = Number.isFinite(n) ? n : copy.length; // Infinity => todos
+  const limit = Number.isFinite(n) ? n : copy.length;
   const picked = copy.slice(0, Math.min(limit, copy.length));
 
-  // envolver con dirección (cap/country/mix)
   return picked.map(item => {
     let dir = dirMode;
     if (dirMode === "mix") dir = Math.random() < 0.5 ? "cap" : "country";
@@ -661,7 +755,7 @@ function startGameCommon({ mode, name, opponent, questions, seed, restartFn }) {
   state.mode = mode;
   state.name = name || "Jugador";
   state.opponent = opponent || "";
-  state.questions = questions; // ahora son objetos {item, dir, shownCapital?}
+  state.questions = questions;
   state.seed = seed ?? null;
   state.idx = 0;
   state.score = 0;
@@ -706,7 +800,6 @@ function showQuestion() {
   $("answer").value = "";
   $("answer").focus();
 
-  // Hint solo si lo que hay que escribir admite varias respuestas válidas
   const expectedStr = (qObj.dir === "cap") ? q[1] : q[0];
   $("hint").textContent = String(expectedStr).includes("|")
     ? "Esta pregunta admite varias respuestas válidas (con poner una te vale)."
